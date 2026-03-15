@@ -11,7 +11,7 @@ export const THEMES: Theme[] = [
   { id: 'mint',      name: 'ミント',       primary: '#2BAE85', light: '#F0FAF7', border: '#A0DDD0' },
   { id: 'pink',      name: 'ピンク',       primary: '#FF6B9D', light: '#FFF0F5', border: '#FFB3D0' },
   { id: 'lavender',  name: 'ラベンダー',   primary: '#8B6FD6', light: '#F5F0FF', border: '#C5B0F0' },
-  { id: 'mustard',   name: 'マスタード',   primary: '#F5C827', light: '#FFFBE0', border: '#F5DC70' },
+  { id: 'mustard',   name: 'マスタード',   primary: '#C49A00', light: '#FFFBE0', border: '#F0D060' },
   { id: 'coral',     name: 'コーラル',     primary: '#E8614A', light: '#FFF1EE', border: '#F4B4A8' },
 ]
 

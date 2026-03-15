@@ -67,6 +67,9 @@
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.product-row-actions button {
   white-space: nowrap;
 }
 
