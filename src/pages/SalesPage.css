@@ -277,35 +277,24 @@
   gap: 8px;
 }
 
-.received-input-wrap {
+/* お預かり表示（読み取り専用・大きめ表示） */
+.received-display {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  width: 160px;
-  flex-shrink: 0;
+  align-items: baseline;
+  gap: 4px;
 }
 
-.yen-symbol {
-  font-size: 15px;
+.received-display-yen {
+  font-size: 18px;
   color: #555;
-  pointer-events: none;
 }
 
-.received-input {
-  flex: 1;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 8px 10px 8px 6px;
-  font-size: 24px;
+.received-display-amount {
+  font-size: 28px;
   font-weight: bold;
+  color: #333;
   text-align: right;
-  outline: none;
-  min-width: 0;
-}
-
-.received-input:focus {
-  border-color: var(--color-primary);
+  min-width: 80px;
 }
 
 
@@ -424,4 +413,46 @@
 
 .btn-secondary:active {
   opacity: 0.75;
+}
+
+/* 電卓キーパッド */
+.calc-pad {
+  padding: 10px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calc-row {
+  display: flex;
+  gap: 8px;
+}
+
+.calc-key {
+  flex: 1;
+  padding: 18px 0;
+  font-size: 22px;
+  font-weight: bold;
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #333;
+  transition: background 0.1s;
+}
+
+.calc-key:active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.calc-key--clear {
+  background: #fff0f0;
+  border-color: #ffcccc;
+  color: #e04040;
+}
+
+.calc-key--clear:active {
+  background: #ffe0e0;
 }

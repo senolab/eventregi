@@ -39,3 +39,14 @@ export function loadGridColumns(): number {
 export function saveGridColumns(n: number): void {
   localStorage.setItem(GRID_KEY, String(n))
 }
+
+const INPUT_MODE_KEY = 'eventreji_input_mode'
+export type InputMode = 'buttons' | 'calc'
+
+export function loadInputMode(): InputMode {
+  return (localStorage.getItem(INPUT_MODE_KEY) as InputMode) ?? 'buttons'
+}
+
+export function saveInputMode(mode: InputMode): void {
+  localStorage.setItem(INPUT_MODE_KEY, mode)
+}

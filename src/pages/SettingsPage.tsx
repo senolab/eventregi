@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
 import { THEMES, DEFAULT_THEME_ID, applyTheme } from '../themes'
-import { loadThemeId, saveThemeId, loadGridColumns, saveGridColumns } from '../store'
+import { loadThemeId, saveThemeId, loadGridColumns, saveGridColumns, loadInputMode, saveInputMode } from '../store'
+import type { InputMode } from '../store'
 import './SettingsPage.css'
 
 export default function SettingsPage() {
   const [selectedId, setSelectedId] = useState(DEFAULT_THEME_ID)
   const [gridColumns, setGridColumns] = useState(3)
+  const [inputMode, setInputMode] = useState<InputMode>('buttons')
 
   useEffect(() => {
     setSelectedId(loadThemeId() ?? DEFAULT_THEME_ID)
     setGridColumns(loadGridColumns())
+    setInputMode(loadInputMode())
   }, [])
 
   const handleSelectTheme = (id: string) => {
@@ -22,6 +25,11 @@ export default function SettingsPage() {
   const handleGridColumns = (n: number) => {
     saveGridColumns(n)
     setGridColumns(n)
+  }
+
+  const handleInputMode = (mode: InputMode) => {
+    saveInputMode(mode)
+    setInputMode(mode)
   }
 
   return (
@@ -45,6 +53,28 @@ export default function SettingsPage() {
               <span>{n}列</span>
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-label">お預かり金入力方式</div>
+        <div className="input-mode-options">
+          <button
+            className={`input-mode-btn ${inputMode === 'buttons' ? 'selected' : ''}`}
+            onClick={() => handleInputMode('buttons')}
+          >
+            <span className="input-mode-icon">🪙</span>
+            <span className="input-mode-name">ボタン入力</span>
+            <span className="input-mode-desc">硬貨・紙幣ボタンで加算</span>
+          </button>
+          <button
+            className={`input-mode-btn ${inputMode === 'calc' ? 'selected' : ''}`}
+            onClick={() => handleInputMode('calc')}
+          >
+            <span className="input-mode-icon">🔢</span>
+            <span className="input-mode-name">電卓入力</span>
+            <span className="input-mode-desc">数字キーで直接入力</span>
+          </button>
         </div>
       </div>
 

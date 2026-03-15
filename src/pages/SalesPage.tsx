@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Product, CartItem, SaleRecord } from '../types'
-import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns } from '../store'
+import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode } from '../store'
+import type { InputMode } from '../store'
 import './SalesPage.css'
 
 
@@ -11,11 +12,20 @@ export default function SalesPage() {
   const [confirmed, setConfirmed] = useState(false)
   const [gridColumns, setGridColumns] = useState(2)
   const [step, setStep] = useState(0) // 0: 商品選択, 1: 合計確認, 2: お釣り計算
+  const [inputMode, setInputMode] = useState<InputMode>('buttons')
 
   useEffect(() => {
     setProducts(loadProducts())
     setGridColumns(loadGridColumns())
+    setInputMode(loadInputMode())
   }, [])
+
+  // step 2 に入るたびに最新の設定を読み込む
+  useEffect(() => {
+    if (step === 2) {
+      setInputMode(loadInputMode())
+    }
+  }, [step])
 
   // カートに商品があればステップ1に進める
   useEffect(() => {
@@ -46,6 +56,19 @@ export default function SalesPage() {
 
   const addReceived = (amount: number) => {
     setReceived(prev => String((parseInt(prev) || 0) + amount))
+  }
+
+  const handleCalcInput = (key: string) => {
+    if (key === 'C') {
+      setReceived('')
+    } else if (key === '00') {
+      setReceived(prev => prev === '' ? '' : prev + '00')
+    } else {
+      setReceived(prev => {
+        const next = prev + key
+        return String(parseInt(next))
+      })
+    }
   }
 
   const cartQuantity = (productId: string) =>
@@ -95,6 +118,13 @@ export default function SalesPage() {
     setReceived('')
     setStep(0)
   }
+
+  const calcKeys = [
+    ['7', '8', '9'],
+    ['4', '5', '6'],
+    ['1', '2', '3'],
+    ['00', '0', 'C'],
+  ]
 
   return (
     <div className="sales-page">
@@ -156,7 +186,6 @@ export default function SalesPage() {
 
       {cart.length > 0 && (step === 1 || step === 2) && (
         <div className={`checkout-panel${step === 2 ? ' checkout-panel--fullpage' : ''}`}>
-          {/* お客様向け会計表示 */}
           <div className="receipt-section">
             <div className="receipt-header">お会計</div>
             <div className="receipt-items">
@@ -187,48 +216,18 @@ export default function SalesPage() {
 
             {step === 2 && (
               <>
+                {/* お預かり表示 */}
                 <div className="receipt-received-row">
                   <span className="receipt-received-label">お預かり</span>
-                  <div className="received-input-wrap">
-                    <span className="yen-symbol">¥</span>
-                    <input
-                      className="received-input"
-                      type="number"
-                      inputMode="numeric"
-                      placeholder="0"
-                      value={received}
-                      onChange={e => setReceived(e.target.value)}
-                    />
+                  <div className="received-display">
+                    <span className="received-display-yen">¥</span>
+                    <span className="received-display-amount">
+                      {receivedNum > 0 ? receivedNum.toLocaleString() : '—'}
+                    </span>
                   </div>
                 </div>
 
-                {/* 操作エリア */}
-                <div className="operator-section">
-                  <div className="quick-btns">
-                    {[100, 500].map(v => (
-                      <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
-                        <span className="quick-btn-icon">🪙</span>
-                        <span>{v.toLocaleString()}</span>
-                      </button>
-                    ))}
-                    <button className="quick-btn quick-btn--square" onClick={() => addReceived(1000)}>
-                      <span className="quick-btn-icon">💴</span>
-                      <span>1,000</span>
-                    </button>
-                  </div>
-                  <div className="quick-btns">
-                    {[5000, 10000].map(v => (
-                      <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
-                        <span className="quick-btn-icon">💴</span>
-                        <span>{v.toLocaleString()}</span>
-                      </button>
-                    ))}
-                    <button className="quick-btn quick-btn--clear" onClick={() => setReceived('')}>
-                      <span>C</span>
-                    </button>
-                  </div>
-                </div>
-
+                {/* お釣り */}
                 <div className={`receipt-change ${receivedNum === 0 ? 'placeholder' : change === null ? 'insufficient' : ''}`}>
                   <span>{receivedNum === 0 ? 'お釣り' : change === null ? '不足' : 'お釣り'}</span>
                   <span>{receivedNum === 0
@@ -238,6 +237,51 @@ export default function SalesPage() {
                       : `¥${change.toLocaleString()}`}
                   </span>
                 </div>
+
+                {/* 操作エリア */}
+                {inputMode === 'buttons' ? (
+                  <div className="operator-section">
+                    <div className="quick-btns">
+                      {[100, 500].map(v => (
+                        <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
+                          <span className="quick-btn-icon">🪙</span>
+                          <span>{v.toLocaleString()}</span>
+                        </button>
+                      ))}
+                      <button className="quick-btn quick-btn--square" onClick={() => addReceived(1000)}>
+                        <span className="quick-btn-icon">💴</span>
+                        <span>1,000</span>
+                      </button>
+                    </div>
+                    <div className="quick-btns">
+                      {[5000, 10000].map(v => (
+                        <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
+                          <span className="quick-btn-icon">💴</span>
+                          <span>{v.toLocaleString()}</span>
+                        </button>
+                      ))}
+                      <button className="quick-btn quick-btn--clear" onClick={() => setReceived('')}>
+                        <span>C</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="calc-pad">
+                    {calcKeys.map((row, ri) => (
+                      <div key={ri} className="calc-row">
+                        {row.map(key => (
+                          <button
+                            key={key}
+                            className={`calc-key ${key === 'C' ? 'calc-key--clear' : ''}`}
+                            onClick={() => handleCalcInput(key)}
+                          >
+                            {key}
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
