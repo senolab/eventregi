@@ -165,7 +165,7 @@
 }
 
 .checkout-panel--fullpage .receipt-section {
-  padding-bottom: 100px; /* step2-footerの高さ分 */
+  padding-bottom: 160px; /* step2-footerの高さ分 */
 }
 
 .receipt-header {
