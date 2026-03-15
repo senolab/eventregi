@@ -112,7 +112,7 @@ export default function SalesPage() {
         )}
       </div>
 
-      {step === 0 && (
+      {(step === 0 || step === 1) && (
         <>
           {products.length === 0 ? (
             <div className="empty-state">
