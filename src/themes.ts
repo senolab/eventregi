@@ -8,11 +8,13 @@ export interface Theme {
 
 export const THEMES: Theme[] = [
   { id: 'navy',      name: 'ネイビー',     primary: '#3A6EBF', light: '#EEF3FB', border: '#A5BFE0' },
-  { id: 'mint',      name: 'ミント',       primary: '#2BAE85', light: '#F0FAF7', border: '#A0DDD0' },
+  { id: 'mint',      name: 'ミント',       primary: '#2EA854', light: '#EDFAF3', border: '#90D8A8' },
   { id: 'pink',      name: 'ピンク',       primary: '#FF6B9D', light: '#FFF0F5', border: '#FFB3D0' },
   { id: 'lavender',  name: 'ラベンダー',   primary: '#8B6FD6', light: '#F5F0FF', border: '#C5B0F0' },
-  { id: 'mustard',   name: 'マスタード',   primary: '#C49A00', light: '#FFFBE0', border: '#F0D060' },
-  { id: 'coral',     name: 'コーラル',     primary: '#E8614A', light: '#FFF1EE', border: '#F4B4A8' },
+  { id: 'mustard',   name: 'アンバー',     primary: '#F09200', light: '#FFF5E0', border: '#F5C870' },
+  { id: 'coral',     name: 'チェリー',     primary: '#D63B55', light: '#FFF0F3', border: '#F0A0B0' },
+  { id: 'teal',      name: 'テール',       primary: '#1AADAD', light: '#EBF9F9', border: '#90D8D8' },
+  { id: 'gray',      name: 'グレー',       primary: '#6B7280', light: '#F3F4F6', border: '#C0C4CC' },
 ]
 
 export const DEFAULT_THEME_ID = 'navy'
