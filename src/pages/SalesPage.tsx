@@ -204,8 +204,30 @@ export default function SalesPage() {
                       value={received}
                       onChange={e => setReceived(e.target.value)}
                     />
+                    <button className="clear-input-btn" onClick={() => setReceived('')}>C</button>
                   </div>
                 </div>
+
+                {/* 操作エリア */}
+                <div className="operator-section">
+                  <div className="quick-btns quick-btns--coins">
+                    {[100, 500].map(v => (
+                      <button key={v} className="quick-btn quick-btn--coin" onClick={() => addReceived(v)}>
+                        <span className="quick-btn-icon">🪙</span>
+                        <span>{v.toLocaleString()}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="quick-btns quick-btns--bills">
+                    {[1000, 5000, 10000].map(v => (
+                      <button key={v} className="quick-btn quick-btn--bill" onClick={() => addReceived(v)}>
+                        <span className="quick-btn-icon">💴</span>
+                        <span>{v.toLocaleString()}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className={`receipt-change ${receivedNum === 0 ? 'placeholder' : change === null ? 'insufficient' : ''}`}>
                   <span>{receivedNum === 0 ? 'お釣り' : change === null ? '不足' : 'お釣り'}</span>
                   <span>{receivedNum === 0
@@ -214,25 +236,6 @@ export default function SalesPage() {
                       ? `¥${(total - receivedNum).toLocaleString()}`
                       : `¥${change.toLocaleString()}`}
                   </span>
-                </div>
-
-                {/* 操作エリア */}
-                <div className="operator-section">
-                  <div className="quick-btns quick-btns--row1">
-                    {[100, 500, 1000].map(v => (
-                      <button key={v} className="quick-btn quick-btn--large" onClick={() => addReceived(v)}>
-                        {v.toLocaleString()}
-                      </button>
-                    ))}
-                    <button className="quick-btn quick-btn--large clear-quick" onClick={() => setReceived('')}>C</button>
-                  </div>
-                  <div className="quick-btns quick-btns--row2">
-                    {[5000, 10000].map(v => (
-                      <button key={v} className="quick-btn quick-btn--small" onClick={() => addReceived(v)}>
-                        {v.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </>
             )}

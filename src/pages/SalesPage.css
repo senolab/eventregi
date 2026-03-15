@@ -246,15 +246,19 @@
 .receipt-received-label {
   font-size: 14px;
   color: #666;
+  white-space: nowrap;
 }
 
 .receipt-change {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 24px;
   color: #2BAE85;
-  margin-top: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-primary-border);
 }
 
 .receipt-change.insufficient {
@@ -274,67 +278,92 @@
 }
 
 .received-input-wrap {
-  position: relative;
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .yen-symbol {
-  position: absolute;
-  left: 10px;
   font-size: 15px;
   color: #555;
   pointer-events: none;
 }
 
 .received-input {
-  width: 130px;
+  flex: 1;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 8px 10px 8px 26px;
-  font-size: 16px;
+  padding: 8px 10px 8px 6px;
+  font-size: 18px;
+  font-weight: bold;
   text-align: right;
   outline: none;
+  min-width: 0;
 }
 
 .received-input:focus {
   border-color: var(--color-primary);
 }
 
-.quick-btns {
-  display: flex;
-  gap: 6px;
+.clear-input-btn {
+  padding: 8px 14px;
+  background: #f0f0f0;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
 }
 
-.quick-btns--row1 {
-  margin-bottom: 6px;
+.quick-btns {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .quick-btn {
   font-weight: bold;
   background: var(--color-primary-light);
   color: var(--color-primary);
-  border: 1px solid var(--color-primary-border);
-  border-radius: 12px;
+  border: 2px solid var(--color-primary-border);
   cursor: pointer;
   flex: 1;
   font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 }
 
-.quick-btn--large {
-  padding: 16px 0;
-  font-size: 16px;
+/* 硬貨ボタン: 丸 */
+.quick-btn--coin {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  flex: none;
+  font-size: 14px;
+  padding: 0;
 }
 
-.quick-btn--small {
-  padding: 10px 0;
+.quick-btns--coins {
+  justify-content: center;
+  gap: 16px;
+}
+
+/* お札ボタン: 横長 */
+.quick-btn--bill {
+  border-radius: 12px;
+  padding: 12px 0;
   font-size: 14px;
 }
 
-.quick-btn.clear-quick {
-  background: #f0f0f0;
-  color: #666;
-  border-color: #ddd;
+.quick-btn-icon {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .memo-input {
