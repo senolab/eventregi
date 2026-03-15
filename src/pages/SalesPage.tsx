@@ -185,7 +185,7 @@ export default function SalesPage() {
             {step === 1 && (
               <div className="cart-actions step1-actions">
                 <button className="btn-primary" onClick={handleGoToPayment}>
-                  会計へ進む
+                  お会計へ
                 </button>
               </div>
             )}
@@ -204,27 +204,33 @@ export default function SalesPage() {
                       value={received}
                       onChange={e => setReceived(e.target.value)}
                     />
-                    <button className="clear-input-btn" onClick={() => setReceived('')}>C</button>
                   </div>
                 </div>
 
                 {/* 操作エリア */}
                 <div className="operator-section">
-                  <div className="quick-btns quick-btns--coins">
+                  <div className="quick-btns">
                     {[100, 500].map(v => (
-                      <button key={v} className="quick-btn quick-btn--coin" onClick={() => addReceived(v)}>
+                      <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
                         <span className="quick-btn-icon">🪙</span>
                         <span>{v.toLocaleString()}</span>
                       </button>
                     ))}
+                    <button className="quick-btn quick-btn--square" onClick={() => addReceived(1000)}>
+                      <span className="quick-btn-icon">💴</span>
+                      <span>1,000</span>
+                    </button>
                   </div>
-                  <div className="quick-btns quick-btns--bills">
-                    {[1000, 5000, 10000].map(v => (
-                      <button key={v} className="quick-btn quick-btn--bill" onClick={() => addReceived(v)}>
+                  <div className="quick-btns">
+                    {[5000, 10000].map(v => (
+                      <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
                         <span className="quick-btn-icon">💴</span>
                         <span>{v.toLocaleString()}</span>
                       </button>
                     ))}
+                    <button className="quick-btn quick-btn--clear" onClick={() => setReceived('')}>
+                      <span>C</span>
+                    </button>
                   </div>
                 </div>
 
