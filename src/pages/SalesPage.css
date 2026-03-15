@@ -145,6 +145,18 @@
   overflow-y: auto;
 }
 
+/* ステップ2: フルページ表示 */
+.checkout-panel--fullpage {
+  position: static;
+  transform: none;
+  max-height: none;
+  box-shadow: none;
+  border-top: none;
+  border-bottom: none;
+  overflow-y: visible;
+  flex: 1;
+}
+
 /* お客様向けレシート部分 */
 .receipt-section {
   background: var(--color-primary-light);
@@ -288,13 +300,13 @@
 }
 
 .quick-btn {
-  padding: 7px 0;
-  font-size: 12px;
+  padding: 14px 0;
+  font-size: 15px;
   font-weight: bold;
   background: var(--color-primary-light);
   color: var(--color-primary);
   border: 1px solid var(--color-primary-border);
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   flex: 1;
   min-width: 52px;

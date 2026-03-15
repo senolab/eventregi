@@ -160,7 +160,7 @@ export default function SalesPage() {
       )}
 
       {cart.length > 0 && (step === 1 || step === 2) && (
-        <div className="checkout-panel">
+        <div className={`checkout-panel${step === 2 ? ' checkout-panel--fullpage' : ''}`}>
           {/* お客様向け会計表示 */}
           <div className="receipt-section">
             <div className="receipt-header">お会計</div>
