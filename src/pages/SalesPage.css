@@ -164,6 +164,10 @@
   border-bottom: 1px dashed var(--color-primary-border);
 }
 
+.checkout-panel--fullpage .receipt-section {
+  padding-bottom: 100px; /* step2-footerの高さ分 */
+}
+
 .receipt-header {
   font-size: 13px;
   color: #888;
@@ -257,6 +261,10 @@
   color: #ff4444;
 }
 
+.receipt-change.placeholder {
+  color: #ccc;
+}
+
 /* 操作エリア */
 .operator-section {
   padding: 10px 16px 12px;
@@ -295,13 +303,14 @@
 
 .quick-btns {
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
 }
 
+.quick-btns--row1 {
+  margin-bottom: 6px;
+}
+
 .quick-btn {
-  padding: 14px 0;
-  font-size: 15px;
   font-weight: bold;
   background: var(--color-primary-light);
   color: var(--color-primary);
@@ -309,7 +318,17 @@
   border-radius: 12px;
   cursor: pointer;
   flex: 1;
-  min-width: 52px;
+  font-family: inherit;
+}
+
+.quick-btn--large {
+  padding: 16px 0;
+  font-size: 16px;
+}
+
+.quick-btn--small {
+  padding: 10px 0;
+  font-size: 14px;
 }
 
 .quick-btn.clear-quick {
@@ -340,9 +359,21 @@
   margin-top: 8px;
 }
 
-.cart-actions.step2-actions {
-  padding-top: 12px;
-  border-top: 1px dashed var(--color-primary-border);
+.step2-footer {
+  position: fixed;
+  bottom: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+  z-index: 60;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 
 .confirm-btn {

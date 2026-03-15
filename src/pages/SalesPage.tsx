@@ -206,38 +206,48 @@ export default function SalesPage() {
                     />
                   </div>
                 </div>
-                {receivedNum > 0 && (
-                  <div className={`receipt-change ${change === null ? 'insufficient' : ''}`}>
-                    <span>{change === null ? '不足' : 'お釣り'}</span>
-                    <span>{change === null
+                <div className={`receipt-change ${receivedNum === 0 ? 'placeholder' : change === null ? 'insufficient' : ''}`}>
+                  <span>{receivedNum === 0 ? 'お釣り' : change === null ? '不足' : 'お釣り'}</span>
+                  <span>{receivedNum === 0
+                    ? '—'
+                    : change === null
                       ? `¥${(total - receivedNum).toLocaleString()}`
                       : `¥${change.toLocaleString()}`}
-                    </span>
-                  </div>
-                )}
+                  </span>
+                </div>
 
                 {/* 操作エリア */}
                 <div className="operator-section">
-                  <div className="quick-btns">
-                    {QUICK_AMOUNTS.map(v => (
-                      <button key={v} className="quick-btn" onClick={() => addReceived(v)}>
+                  <div className="quick-btns quick-btns--row1">
+                    {[100, 500, 1000].map(v => (
+                      <button key={v} className="quick-btn quick-btn--large" onClick={() => addReceived(v)}>
                         {v.toLocaleString()}
                       </button>
                     ))}
-                    <button className="quick-btn clear-quick" onClick={() => setReceived('')}>C</button>
+                    <button className="quick-btn quick-btn--large clear-quick" onClick={() => setReceived('')}>C</button>
                   </div>
-                  <div className="cart-actions step2-actions">
-                    <button className="btn-secondary" onClick={handleBack}>
-                      戻る
-                    </button>
-                    <button className="btn-primary confirm-btn" onClick={handleConfirm}>
-                      {confirmed ? '✓ 完了！' : '会計確定'}
-                    </button>
+                  <div className="quick-btns quick-btns--row2">
+                    {[5000, 10000].map(v => (
+                      <button key={v} className="quick-btn quick-btn--small" onClick={() => addReceived(v)}>
+                        {v.toLocaleString()}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </>
             )}
           </div>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="step2-footer">
+          <button className="btn-secondary" onClick={handleBack}>
+            戻る
+          </button>
+          <button className="btn-primary confirm-btn" onClick={handleConfirm}>
+            {confirmed ? '✓ 完了！' : '会計確定'}
+          </button>
         </div>
       )}
     </div>
