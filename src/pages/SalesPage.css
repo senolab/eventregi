@@ -130,7 +130,7 @@
 /* ===== 会計パネル ===== */
 .checkout-panel {
   position: fixed;
-  bottom: 65px;
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -376,7 +376,7 @@
 
 .step2-footer {
   position: fixed;
-  bottom: 65px;
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
