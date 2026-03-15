@@ -3,7 +3,6 @@ import type { Product, CartItem, SaleRecord } from '../types'
 import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns } from '../store'
 import './SalesPage.css'
 
-const QUICK_AMOUNTS = [100, 500, 1000, 5000, 10000]
 
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -81,10 +80,6 @@ export default function SalesPage() {
     setStep(0)
     setConfirmed(true)
     setTimeout(() => setConfirmed(false), 2000)
-  }
-
-  const handleGoToCheckout = () => {
-    setStep(1)
   }
 
   const handleGoToPayment = () => {
