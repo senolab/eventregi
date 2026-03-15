@@ -324,6 +324,46 @@
   gap: 10px;
 }
 
+.cart-actions.step1-actions {
+  margin-top: 8px;
+}
+
+.cart-actions.step2-actions {
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-primary-border);
+}
+
 .confirm-btn {
   flex: 1;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+  flex: 0.8;
+}
+
+.btn-secondary:active {
+  opacity: 0.75;
 }

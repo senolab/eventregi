@@ -11,11 +11,19 @@ export default function SalesPage() {
   const [received, setReceived] = useState('')
   const [confirmed, setConfirmed] = useState(false)
   const [gridColumns, setGridColumns] = useState(2)
+  const [step, setStep] = useState(0) // 0: 商品選択, 1: 合計確認, 2: お釣り計算
 
   useEffect(() => {
     setProducts(loadProducts())
     setGridColumns(loadGridColumns())
   }, [])
+
+  // カートに商品があればステップ1に進める
+  useEffect(() => {
+    if (cart.length > 0 && step === 0) {
+      setStep(1)
+    }
+  }, [cart, step])
 
   const addToCart = (product: Product) => {
     if (product.stock <= 0) return
@@ -70,8 +78,27 @@ export default function SalesPage() {
 
     setCart([])
     setReceived('')
+    setStep(0)
     setConfirmed(true)
     setTimeout(() => setConfirmed(false), 2000)
+  }
+
+  const handleGoToCheckout = () => {
+    setStep(1)
+  }
+
+  const handleGoToPayment = () => {
+    setStep(2)
+  }
+
+  const handleBack = () => {
+    setStep(1)
+  }
+
+  const handleClear = () => {
+    setCart([])
+    setReceived('')
+    setStep(0)
   }
 
   return (
@@ -79,56 +106,60 @@ export default function SalesPage() {
       <div className="page-header">
         レジ
         {cart.length > 0 && (
-          <button className="header-clear-btn" onClick={() => { setCart([]); setReceived('') }}>
+          <button className="header-clear-btn" onClick={handleClear}>
             クリア
           </button>
         )}
       </div>
 
-      {products.length === 0 ? (
-        <div className="empty-state">
-          <p>商品が登録されていません</p>
-          <p className="empty-hint">「商品」タブから登録してください</p>
-        </div>
-      ) : (
-        <div
-          className="product-grid-wrap"
-          style={{ paddingBottom: cart.length > 0 ? '310px' : '16px' }}
-        >
-          <div
-            className="product-grid"
-            style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
-          >
-          {products.map(product => {
-            const qty = cartQuantity(product.id)
-            const soldOut = product.stock <= 0
-            return (
-              <button
-                key={product.id}
-                className={`product-card ${soldOut ? 'sold-out' : ''} ${qty > 0 ? 'in-cart' : ''}`}
-                onClick={() => addToCart(product)}
-                disabled={soldOut}
+      {step === 0 && (
+        <>
+          {products.length === 0 ? (
+            <div className="empty-state">
+              <p>商品が登録されていません</p>
+              <p className="empty-hint">「商品」タブから登録してください</p>
+            </div>
+          ) : (
+            <div
+              className="product-grid-wrap"
+              style={{ paddingBottom: cart.length > 0 ? '360px' : '16px' }}
+            >
+              <div
+                className="product-grid"
+                style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
               >
-                {qty > 0 && <span className="cart-badge">{qty}</span>}
-                <div className="product-card-image-wrap">
-                  {product.image
-                    ? <img src={product.image} className="product-card-img" alt={product.name} />
-                    : <span className="product-card-icon">📚</span>
-                  }
-                </div>
-                <span className="product-name">{product.name}</span>
-                <span className="product-price">¥{product.price.toLocaleString()}</span>
-                <span className="product-stock">
-                  {soldOut ? '在庫なし' : `残${product.stock}`}
-                </span>
-              </button>
-            )
-          })}
-          </div>
-        </div>
+              {products.map(product => {
+                const qty = cartQuantity(product.id)
+                const soldOut = product.stock <= 0
+                return (
+                  <button
+                    key={product.id}
+                    className={`product-card ${soldOut ? 'sold-out' : ''} ${qty > 0 ? 'in-cart' : ''}`}
+                    onClick={() => addToCart(product)}
+                    disabled={soldOut}
+                  >
+                    {qty > 0 && <span className="cart-badge">{qty}</span>}
+                    <div className="product-card-image-wrap">
+                      {product.image
+                        ? <img src={product.image} className="product-card-img" alt={product.name} />
+                        : <span className="product-card-icon">📚</span>
+                      }
+                    </div>
+                    <span className="product-name">{product.name}</span>
+                    <span className="product-price">¥{product.price.toLocaleString()}</span>
+                    <span className="product-stock">
+                      {soldOut ? '在庫なし' : `残${product.stock}`}
+                    </span>
+                  </button>
+                )
+              })}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {cart.length > 0 && (
+      {cart.length > 0 && (step === 1 || step === 2) && (
         <div className="checkout-panel">
           {/* お客様向け会計表示 */}
           <div className="receipt-section">
@@ -150,46 +181,62 @@ export default function SalesPage() {
               <span>合計</span>
               <span className="receipt-total-amount">¥{total.toLocaleString()}</span>
             </div>
-            <div className="receipt-received-row">
-              <span className="receipt-received-label">お預かり</span>
-              <div className="received-input-wrap">
-                <span className="yen-symbol">¥</span>
-                <input
-                  className="received-input"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder="0"
-                  value={received}
-                  onChange={e => setReceived(e.target.value)}
-                />
-              </div>
-            </div>
-            {receivedNum > 0 && (
-              <div className={`receipt-change ${change === null ? 'insufficient' : ''}`}>
-                <span>{change === null ? '不足' : 'お釣り'}</span>
-                <span>{change === null
-                  ? `¥${(total - receivedNum).toLocaleString()}`
-                  : `¥${change.toLocaleString()}`}
-                </span>
+
+            {step === 1 && (
+              <div className="cart-actions step1-actions">
+                <button className="btn-primary" onClick={handleGoToPayment}>
+                  会計へ進む
+                </button>
               </div>
             )}
-          </div>
 
-          {/* 操作エリア */}
-          <div className="operator-section">
-            <div className="quick-btns">
-              {QUICK_AMOUNTS.map(v => (
-                <button key={v} className="quick-btn" onClick={() => addReceived(v)}>
-                  {v.toLocaleString()}
-                </button>
-              ))}
-              <button className="quick-btn clear-quick" onClick={() => setReceived('')}>C</button>
-            </div>
-            <div className="cart-actions">
-              <button className="btn-primary confirm-btn" onClick={handleConfirm}>
-                {confirmed ? '✓ 完了！' : '会計確定'}
-              </button>
-            </div>
+            {step === 2 && (
+              <>
+                <div className="receipt-received-row">
+                  <span className="receipt-received-label">お預かり</span>
+                  <div className="received-input-wrap">
+                    <span className="yen-symbol">¥</span>
+                    <input
+                      className="received-input"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="0"
+                      value={received}
+                      onChange={e => setReceived(e.target.value)}
+                    />
+                  </div>
+                </div>
+                {receivedNum > 0 && (
+                  <div className={`receipt-change ${change === null ? 'insufficient' : ''}`}>
+                    <span>{change === null ? '不足' : 'お釣り'}</span>
+                    <span>{change === null
+                      ? `¥${(total - receivedNum).toLocaleString()}`
+                      : `¥${change.toLocaleString()}`}
+                    </span>
+                  </div>
+                )}
+
+                {/* 操作エリア */}
+                <div className="operator-section">
+                  <div className="quick-btns">
+                    {QUICK_AMOUNTS.map(v => (
+                      <button key={v} className="quick-btn" onClick={() => addReceived(v)}>
+                        {v.toLocaleString()}
+                      </button>
+                    ))}
+                    <button className="quick-btn clear-quick" onClick={() => setReceived('')}>C</button>
+                  </div>
+                  <div className="cart-actions step2-actions">
+                    <button className="btn-secondary" onClick={handleBack}>
+                      戻る
+                    </button>
+                    <button className="btn-primary confirm-btn" onClick={handleConfirm}>
+                      {confirmed ? '✓ 完了！' : '会計確定'}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
