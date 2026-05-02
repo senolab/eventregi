@@ -60,20 +60,20 @@ export default function SettingsPage() {
         <div className="settings-label">お預かり金入力方式</div>
         <div className="input-mode-options">
           <button
-            className={`input-mode-btn ${inputMode === 'buttons' ? 'selected' : ''}`}
-            onClick={() => handleInputMode('buttons')}
-          >
-            <span className="input-mode-icon">🪙</span>
-            <span className="input-mode-name">ボタン入力</span>
-            <span className="input-mode-desc">硬貨・紙幣ボタンで加算</span>
-          </button>
-          <button
             className={`input-mode-btn ${inputMode === 'calc' ? 'selected' : ''}`}
             onClick={() => handleInputMode('calc')}
           >
             <span className="input-mode-icon">🔢</span>
             <span className="input-mode-name">電卓入力</span>
             <span className="input-mode-desc">数字キーで直接入力</span>
+          </button>
+          <button
+            className={`input-mode-btn ${inputMode === 'buttons' ? 'selected' : ''}`}
+            onClick={() => handleInputMode('buttons')}
+          >
+            <span className="input-mode-icon">🪙</span>
+            <span className="input-mode-name">ボタン入力</span>
+            <span className="input-mode-desc">硬貨・紙幣ボタンで加算</span>
           </button>
         </div>
       </div>

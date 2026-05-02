@@ -13,7 +13,7 @@ export const THEMES: Theme[] = [
   { id: 'lavender',  name: 'ラベンダー',   primary: '#8B6FD6', light: '#F5F0FF', border: '#C5B0F0' },
   { id: 'mustard',   name: 'アンバー',     primary: '#F09200', light: '#FFF5E0', border: '#F5C870' },
   { id: 'coral',     name: 'チェリー',     primary: '#D63B55', light: '#FFF0F3', border: '#F0A0B0' },
-  { id: 'teal',      name: 'テール',       primary: '#1AADAD', light: '#EBF9F9', border: '#90D8D8' },
+  { id: 'teal',      name: 'スカイ',       primary: '#2196C9', light: '#EAF5FB', border: '#90CCE8' },
   { id: 'gray',      name: 'グレー',       primary: '#6B7280', light: '#F3F4F6', border: '#C0C4CC' },
 ]
 
