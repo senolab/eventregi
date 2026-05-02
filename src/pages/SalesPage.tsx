@@ -294,7 +294,11 @@ export default function SalesPage() {
           <button className="btn-secondary" onClick={handleBack}>
             戻る
           </button>
-          <button className="btn-primary confirm-btn" onClick={handleConfirm}>
+          <button
+            className="btn-primary confirm-btn"
+            onClick={handleConfirm}
+            disabled={receivedNum < total}
+          >
             会計確定
           </button>
         </div>
