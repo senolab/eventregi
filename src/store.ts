@@ -44,7 +44,7 @@ const INPUT_MODE_KEY = 'eventreji_input_mode'
 export type InputMode = 'buttons' | 'calc'
 
 export function loadInputMode(): InputMode {
-  return (localStorage.getItem(INPUT_MODE_KEY) as InputMode) ?? 'buttons'
+  return (localStorage.getItem(INPUT_MODE_KEY) as InputMode) ?? 'calc'
 }
 
 export function saveInputMode(mode: InputMode): void {
