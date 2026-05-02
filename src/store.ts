@@ -4,9 +4,21 @@ const PRODUCTS_KEY = 'eventreji_products'
 const SALES_KEY = 'eventreji_sales'
 const THEME_KEY = 'eventreji_theme'
 
+export function generateId(): string {
+  return crypto.randomUUID()
+}
+
+function parseJSON<T>(data: string | null, fallback: T): T {
+  if (!data) return fallback
+  try {
+    return JSON.parse(data) as T
+  } catch {
+    return fallback
+  }
+}
+
 export function loadProducts(): Product[] {
-  const data = localStorage.getItem(PRODUCTS_KEY)
-  return data ? JSON.parse(data) : []
+  return parseJSON(localStorage.getItem(PRODUCTS_KEY), [])
 }
 
 export function saveProducts(products: Product[]): void {
@@ -14,8 +26,7 @@ export function saveProducts(products: Product[]): void {
 }
 
 export function loadSales(): SaleRecord[] {
-  const data = localStorage.getItem(SALES_KEY)
-  return data ? JSON.parse(data) : []
+  return parseJSON(localStorage.getItem(SALES_KEY), [])
 }
 
 export function saveSales(sales: SaleRecord[]): void {

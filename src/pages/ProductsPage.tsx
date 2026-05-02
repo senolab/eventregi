@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Product } from '../types'
-import { loadProducts, saveProducts } from '../store'
+import { loadProducts, saveProducts, generateId } from '../store'
 import './ProductsPage.css'
 
 type FormState = {
@@ -38,6 +38,7 @@ export default function ProductsPage() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState<FormState>(emptyForm)
   const [editId, setEditId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function ProductsPage() {
       ))
     } else {
       const newProduct: Product = {
-        id: Date.now().toString(),
+        id: generateId(),
         name,
         price,
         stock,
@@ -96,9 +97,14 @@ export default function ProductsPage() {
     setShowForm(false)
   }
 
-  const handleDelete = (id: string) => {
-    if (!confirm('この商品を削除しますか？')) return
-    persist(products.filter(p => p.id !== id))
+  const handleDeleteRequest = (id: string) => {
+    setDeleteConfirmId(id)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (!deleteConfirmId) return
+    persist(products.filter(p => p.id !== deleteConfirmId))
+    setDeleteConfirmId(null)
   }
 
   return (
@@ -126,7 +132,14 @@ export default function ProductsPage() {
             </div>
             <div className="product-row-actions">
               <button className="btn-secondary" onClick={() => openEdit(product)}>編集</button>
-              <button className="btn-danger" onClick={() => handleDelete(product.id)}>削除</button>
+              {deleteConfirmId === product.id ? (
+                <>
+                  <button className="btn-danger" onClick={handleDeleteConfirm}>確認</button>
+                  <button className="btn-secondary" onClick={() => setDeleteConfirmId(null)}>✕</button>
+                </>
+              ) : (
+                <button className="btn-danger" onClick={() => handleDeleteRequest(product.id)}>削除</button>
+              )}
             </div>
           </div>
         ))}

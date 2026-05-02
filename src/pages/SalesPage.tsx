@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import type { Product, CartItem, SaleRecord } from '../types'
-import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode } from '../store'
+import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode, generateId } from '../store'
 import type { InputMode } from '../store'
 import './SalesPage.css'
 
+const COIN_AMOUNTS = [100, 500]
+const BILL_AMOUNTS = [1000, 5000, 10000]
 
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -12,20 +14,13 @@ export default function SalesPage() {
   const [confirmed, setConfirmed] = useState(false)
   const [gridColumns, setGridColumns] = useState(2)
   const [step, setStep] = useState(0) // 0: 商品選択, 1: 合計確認, 2: お釣り計算
-  const [inputMode, setInputMode] = useState<InputMode>('buttons')
+  const [inputMode, setInputMode] = useState<InputMode>('calc')
 
   useEffect(() => {
     setProducts(loadProducts())
     setGridColumns(loadGridColumns())
     setInputMode(loadInputMode())
   }, [])
-
-  // step 2 に入るたびに最新の設定を読み込む
-  useEffect(() => {
-    if (step === 2) {
-      setInputMode(loadInputMode())
-    }
-  }, [step])
 
   // カートに商品があればステップ1に進める
   useEffect(() => {
@@ -75,7 +70,7 @@ export default function SalesPage() {
     cart.find(item => item.product.id === productId)?.quantity ?? 0
 
   const handleConfirm = () => {
-    if (cart.length === 0) return
+    if (cart.length === 0 || confirmed) return
 
     const updatedProducts = products.map(p => {
       const cartItem = cart.find(item => item.product.id === p.id)
@@ -86,7 +81,7 @@ export default function SalesPage() {
     setProducts(updatedProducts)
 
     const record: SaleRecord = {
-      id: Date.now().toString(),
+      id: generateId(),
       date: new Date().toLocaleString('ja-JP'),
       items: cart.map(item => ({
         name: item.product.name,
@@ -94,7 +89,6 @@ export default function SalesPage() {
         quantity: item.quantity,
       })),
       total,
-      memo: undefined,
     }
     saveSales([record, ...loadSales()])
 
@@ -106,6 +100,7 @@ export default function SalesPage() {
   }
 
   const handleGoToPayment = () => {
+    setInputMode(loadInputMode())
     setStep(2)
   }
 
@@ -242,19 +237,21 @@ export default function SalesPage() {
                 {inputMode === 'buttons' ? (
                   <div className="operator-section">
                     <div className="quick-btns">
-                      {[100, 500].map(v => (
+                      {COIN_AMOUNTS.map(v => (
                         <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
                           <span className="quick-btn-icon">🪙</span>
                           <span>{v.toLocaleString()}</span>
                         </button>
                       ))}
-                      <button className="quick-btn quick-btn--square" onClick={() => addReceived(1000)}>
-                        <span className="quick-btn-icon">💴</span>
-                        <span>1,000</span>
-                      </button>
+                      {BILL_AMOUNTS.slice(0, 1).map(v => (
+                        <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
+                          <span className="quick-btn-icon">💴</span>
+                          <span>{v.toLocaleString()}</span>
+                        </button>
+                      ))}
                     </div>
                     <div className="quick-btns">
-                      {[5000, 10000].map(v => (
+                      {BILL_AMOUNTS.slice(1).map(v => (
                         <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
                           <span className="quick-btn-icon">💴</span>
                           <span>{v.toLocaleString()}</span>
@@ -293,7 +290,11 @@ export default function SalesPage() {
           <button className="btn-secondary" onClick={handleBack}>
             戻る
           </button>
-          <button className="btn-primary confirm-btn" onClick={handleConfirm}>
+          <button
+            className="btn-primary confirm-btn"
+            onClick={handleConfirm}
+            disabled={confirmed}
+          >
             {confirmed ? '✓ 完了！' : '会計確定'}
           </button>
         </div>
