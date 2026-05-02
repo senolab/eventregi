@@ -125,7 +125,7 @@ export default function SalesPage() {
     <div className="sales-page">
       <div className="page-header">
         レジ
-        {cart.length > 0 && (
+        {cart.length > 0 && step !== 2 && (
           <button className="header-clear-btn" onClick={handleClear}>
             クリア
           </button>
