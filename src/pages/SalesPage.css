@@ -430,3 +430,60 @@
 .calc-key--clear:active {
   background: #ffe0e0;
 }
+
+/* 完了画面 */
+.complete-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 24px;
+  gap: 16px;
+  background: var(--color-primary-light);
+}
+
+.complete-check {
+  font-size: 56px;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.complete-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.complete-summary {
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.complete-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  color: #555;
+}
+
+.complete-row--change {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-primary);
+  border-top: 1px dashed var(--color-primary-border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.complete-next-btn {
+  margin-top: 8px;
+  max-width: 320px;
+}

@@ -11,9 +11,9 @@ export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
   const [received, setReceived] = useState('')
-  const [confirmed, setConfirmed] = useState(false)
   const [gridColumns, setGridColumns] = useState(2)
-  const [step, setStep] = useState(0) // 0: 商品選択, 1: 合計確認, 2: お釣り計算
+  const [step, setStep] = useState(0) // 0: 商品選択, 1: 合計確認, 2: お釣り計算, 3: 完了
+  const [completedSummary, setCompletedSummary] = useState<{ total: number; received: number; change: number } | null>(null)
   const [inputMode, setInputMode] = useState<InputMode>('calc')
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function SalesPage() {
     cart.find(item => item.product.id === productId)?.quantity ?? 0
 
   const handleConfirm = () => {
-    if (cart.length === 0 || confirmed) return
+    if (cart.length === 0) return
 
     const updatedProducts = products.map(p => {
       const cartItem = cart.find(item => item.product.id === p.id)
@@ -92,11 +92,15 @@ export default function SalesPage() {
     }
     saveSales([record, ...loadSales()])
 
+    setCompletedSummary({ total, received: receivedNum, change: change ?? 0 })
     setCart([])
     setReceived('')
+    setStep(3)
+  }
+
+  const handleNextCustomer = () => {
+    setCompletedSummary(null)
     setStep(0)
-    setConfirmed(true)
-    setTimeout(() => setConfirmed(false), 2000)
   }
 
   const handleGoToPayment = () => {
@@ -290,12 +294,32 @@ export default function SalesPage() {
           <button className="btn-secondary" onClick={handleBack}>
             戻る
           </button>
-          <button
-            className="btn-primary confirm-btn"
-            onClick={handleConfirm}
-            disabled={confirmed}
-          >
-            {confirmed ? '✓ 完了！' : '会計確定'}
+          <button className="btn-primary confirm-btn" onClick={handleConfirm}>
+            会計確定
+          </button>
+        </div>
+      )}
+
+      {step === 3 && completedSummary && (
+        <div className="complete-screen">
+          <div className="complete-check">✓</div>
+          <div className="complete-title">会計完了</div>
+          <div className="complete-summary">
+            <div className="complete-row">
+              <span>合計</span>
+              <span>¥{completedSummary.total.toLocaleString()}</span>
+            </div>
+            <div className="complete-row">
+              <span>お預かり</span>
+              <span>¥{completedSummary.received.toLocaleString()}</span>
+            </div>
+            <div className="complete-row complete-row--change">
+              <span>お釣り</span>
+              <span>¥{completedSummary.change.toLocaleString()}</span>
+            </div>
+          </div>
+          <button className="btn-primary complete-next-btn" onClick={handleNextCustomer}>
+            次の会計へ
           </button>
         </div>
       )}
