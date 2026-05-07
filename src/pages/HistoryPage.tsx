@@ -14,6 +14,20 @@ export default function HistoryPage() {
 
   const totalRevenue = sales.reduce((sum, s) => sum + s.total, 0)
 
+  const productSummary = (() => {
+    const map = new Map<string, { quantity: number; revenue: number }>()
+    for (const sale of sales) {
+      for (const item of sale.items) {
+        const cur = map.get(item.name) ?? { quantity: 0, revenue: 0 }
+        map.set(item.name, {
+          quantity: cur.quantity + item.quantity,
+          revenue: cur.revenue + item.price * item.quantity,
+        })
+      }
+    }
+    return Array.from(map.entries()).map(([name, v]) => ({ name, ...v }))
+  })()
+
   const handleClear = () => {
     if (!confirm('売上履歴をすべて削除しますか？')) return
     saveSales([])
@@ -39,17 +53,29 @@ export default function HistoryPage() {
       <div className="page-header">売上履歴</div>
 
       {sales.length > 0 && (
-        <div className="summary-card">
-          <div className="summary-item">
-            <span className="summary-label">総売上</span>
-            <span className="summary-value">¥{totalRevenue.toLocaleString()}</span>
+        <>
+          <div className="summary-card">
+            <div className="summary-item">
+              <span className="summary-label">総売上</span>
+              <span className="summary-value">¥{totalRevenue.toLocaleString()}</span>
+            </div>
+            <div className="summary-divider" />
+            <div className="summary-item">
+              <span className="summary-label">会計回数</span>
+              <span className="summary-value">{sales.length}回</span>
+            </div>
           </div>
-          <div className="summary-divider" />
-          <div className="summary-item">
-            <span className="summary-label">会計回数</span>
-            <span className="summary-value">{sales.length}回</span>
+          <div className="product-summary-card">
+            <div className="product-summary-title">商品別売上</div>
+            {productSummary.map(p => (
+              <div key={p.name} className="product-summary-row">
+                <span className="product-summary-name">{p.name}</span>
+                <span className="product-summary-qty">{p.quantity}冊</span>
+                <span className="product-summary-revenue">¥{p.revenue.toLocaleString()}</span>
+              </div>
+            ))}
           </div>
-        </div>
+        </>
       )}
 
       {sales.length === 0 ? (

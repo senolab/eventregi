@@ -38,6 +38,53 @@
   background: var(--color-primary-border);
 }
 
+.product-summary-card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 16px;
+  margin: 0 16px 16px;
+  padding: 14px 16px;
+}
+
+.product-summary-title {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+.product-summary-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f5f5f5;
+  gap: 8px;
+}
+
+.product-summary-row:last-child {
+  border-bottom: none;
+}
+
+.product-summary-name {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.product-summary-qty {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--color-primary);
+  min-width: 40px;
+  text-align: right;
+}
+
+.product-summary-revenue {
+  font-size: 13px;
+  color: #888;
+  min-width: 72px;
+  text-align: right;
+}
+
 .sale-list {
   padding: 0 16px;
   display: flex;
