@@ -101,6 +101,14 @@ export default function ProductsPage() {
     setDeleteConfirmId(id)
   }
 
+  const move = (index: number, direction: -1 | 1) => {
+    const target = index + direction
+    if (target < 0 || target >= products.length) return
+    const updated = [...products]
+    ;[updated[index], updated[target]] = [updated[target], updated[index]]
+    persist(updated)
+  }
+
   const handleDeleteConfirm = () => {
     if (!deleteConfirmId) return
     persist(products.filter(p => p.id !== deleteConfirmId))
@@ -118,8 +126,26 @@ export default function ProductsPage() {
       )}
 
       <div className="product-list">
-        {products.map(product => (
+        {products.map((product, index) => (
           <div key={product.id} className="product-row">
+            <div className="product-reorder">
+              <button
+                className="reorder-btn"
+                onClick={() => move(index, -1)}
+                disabled={index === 0}
+                aria-label={`${product.name}を上へ移動`}
+              >
+                ▲
+              </button>
+              <button
+                className="reorder-btn"
+                onClick={() => move(index, 1)}
+                disabled={index === products.length - 1}
+                aria-label={`${product.name}を下へ移動`}
+              >
+                ▼
+              </button>
+            </div>
             {product.image
               ? <img src={product.image} className="product-thumb" alt={product.name} />
               : <div className="product-thumb-placeholder">📚</div>
