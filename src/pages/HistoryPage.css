@@ -192,6 +192,18 @@
   padding: 4px;
 }
 
+.export-btn-wrap {
+  padding: 20px 16px 0;
+  text-align: center;
+}
+
+.export-btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .clear-btn-wrap {
   padding: 20px 16px;
   text-align: center;

@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react'
 import type { SaleRecord } from '../types'
-import { loadSales, saveSales } from '../store'
+import { loadSales, saveSales, loadProducts } from '../store'
 import './HistoryPage.css'
+
+function escapeCsv(value: string): string {
+  return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value
+}
+
+function fileStamp(): string {
+  const d = new Date()
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`
+}
 
 export default function HistoryPage() {
   const [sales, setSales] = useState<SaleRecord[]>([])
+  const [productOrder, setProductOrder] = useState<string[]>([])
   const [editingMemoId, setEditingMemoId] = useState<string | null>(null)
   const [memoInput, setMemoInput] = useState('')
 
   useEffect(() => {
     setSales(loadSales())
+    setProductOrder(loadProducts().map(p => p.name))
   }, [])
 
   const totalRevenue = sales.reduce((sum, s) => sum + s.total, 0)
@@ -25,13 +37,62 @@ export default function HistoryPage() {
         })
       }
     }
-    return Array.from(map.entries()).map(([name, v]) => ({ name, ...v }))
+    // 商品タブの並び順に揃える。削除済みなど一覧にない商品は末尾へ
+    const rank = (name: string) => {
+      const i = productOrder.indexOf(name)
+      return i === -1 ? productOrder.length : i
+    }
+    return Array.from(map.entries())
+      .map(([name, v]) => ({ name, ...v }))
+      .sort((a, b) => rank(a.name) - rank(b.name))
   })()
 
   const handleClear = () => {
     if (!confirm('売上履歴をすべて削除しますか？')) return
     saveSales([])
     setSales([])
+  }
+
+  const handleExport = () => {
+    const rows: string[][] = [
+      ['売上明細'],
+      ['日時', '商品名', '単価', '数量', '小計', 'メモ'],
+    ]
+    // 履歴は新しい順に保存されているので、古い順に出力する
+    for (const sale of [...sales].reverse()) {
+      for (const item of sale.items) {
+        rows.push([
+          sale.date,
+          item.name,
+          String(item.price),
+          String(item.quantity),
+          String(item.price * item.quantity),
+          sale.memo ?? '',
+        ])
+      }
+    }
+    rows.push([])
+    rows.push(['商品別集計'])
+    rows.push(['商品名', '冊数', '売上金額'])
+    for (const p of productSummary) {
+      rows.push([p.name, String(p.quantity), String(p.revenue)])
+    }
+    rows.push([])
+    rows.push(['総売上', String(totalRevenue)])
+    rows.push(['会計回数', String(sales.length)])
+
+    const csv = rows
+      .map(row => row.map(escapeCsv).join(','))
+      .join('\r\n')
+
+    // Excel が UTF-8 と認識できるよう BOM を付ける
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `売上_${fileStamp()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   const openMemoEdit = (sale: SaleRecord) => {
@@ -123,6 +184,11 @@ export default function HistoryPage() {
                 )}
               </div>
             ))}
+          </div>
+          <div className="export-btn-wrap">
+            <button className="btn-secondary export-btn" onClick={handleExport}>
+              ⬇ CSVでエクスポート
+            </button>
           </div>
           <div className="clear-btn-wrap">
             <button className="btn-danger clear-btn" onClick={handleClear}>
