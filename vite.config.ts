@@ -4,10 +4,16 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/eventregi/',
+  define: {
+    // 設定画面に表示するビルド日時。更新が反映されたか確認するために使う
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // 登録は src/pwa.ts で自前で行う（iOS 向けの更新処理を挟むため）
+      injectRegister: null,
       manifest: {
         name: 'イベントレジ',
         short_name: 'イベントレジ',
