@@ -5,6 +5,7 @@ import HistoryPage from './pages/HistoryPage'
 import SettingsPage from './pages/SettingsPage'
 import { THEMES, DEFAULT_THEME_ID, applyTheme } from './themes'
 import { loadThemeId } from './store'
+import { CartIcon, BookIcon, ChartIcon, SlidersIcon } from './icons'
 import './App.css'
 
 type Tab = 'sales' | 'products' | 'history' | 'settings'
@@ -28,19 +29,19 @@ export default function App() {
       </main>
       <nav className="bottom-nav">
         <button className={tab === 'sales' ? 'active' : ''} onClick={() => setTab('sales')}>
-          <span className="nav-icon">🛒</span>
+          <CartIcon className="nav-icon" />
           <span>レジ</span>
         </button>
         <button className={tab === 'products' ? 'active' : ''} onClick={() => setTab('products')}>
-          <span className="nav-icon">📚</span>
+          <BookIcon className="nav-icon" />
           <span>商品</span>
         </button>
         <button className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>
-          <span className="nav-icon">📊</span>
+          <ChartIcon className="nav-icon" />
           <span>売上</span>
         </button>
         <button className={tab === 'settings' ? 'active' : ''} onClick={() => setTab('settings')}>
-          <span className="nav-icon">⚙️</span>
+          <SlidersIcon className="nav-icon" />
           <span>設定</span>
         </button>
       </nav>

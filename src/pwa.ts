@@ -9,6 +9,9 @@
  * の 2 つを行って、アプリを開き直すだけで更新が反映されるようにする。
  */
 export function setupServiceWorker(): void {
+  // sw.js はビルド時にのみ生成される。開発サーバーで登録を試みると
+  // index.html が返ってきて MIME type エラーになるため、本番だけで動かす。
+  if (!import.meta.env.PROD) return
   if (!('serviceWorker' in navigator)) return
 
   // 初回登録時は clientsClaim でも controllerchange が発火するが、
