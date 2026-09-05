@@ -328,6 +328,22 @@
   font-size: 16px;
 }
 
+/* 金種ボタン：実物のお金の色で見分けられるようにする */
+.quick-btn--money {
+  background: var(--money-bg);
+  color: var(--money-fg);
+  border-color: var(--money-border);
+}
+
+.quick-btn--money:active {
+  background: var(--money-border);
+}
+
+.quick-btn-amount {
+  font-size: 19px;
+  letter-spacing: 0.02em;
+}
+
 /* Cボタン */
 .quick-btn--clear {
   border-radius: 12px;

@@ -8,6 +8,28 @@ import './SalesPage.css'
 const COIN_AMOUNTS = [100, 500]
 const BILL_AMOUNTS = [1000, 5000, 10000]
 
+/**
+ * 金種ごとの色。実物のお金の色に合わせてあるので、会計中に見分けやすい。
+ * 100円=銀、500円=金、1000円=青、5000円=紫、10000円=茶。
+ */
+const MONEY_COLORS: Record<number, { fg: string; bg: string; border: string }> = {
+  100: { fg: '#6b7280', bg: '#f4f5f7', border: '#d3d7dd' },
+  500: { fg: '#a97b1b', bg: '#fbf5e6', border: '#e6d3a3' },
+  1000: { fg: '#2f6fb5', bg: '#eaf2fa', border: '#b8d2ec' },
+  5000: { fg: '#7a52a5', bg: '#f3edfa', border: '#d5c4ea' },
+  10000: { fg: '#96603a', bg: '#f9f0e9', border: '#e3c9b3' },
+}
+
+function moneyStyle(amount: number): React.CSSProperties {
+  const c = MONEY_COLORS[amount]
+  if (!c) return {}
+  return {
+    '--money-fg': c.fg,
+    '--money-bg': c.bg,
+    '--money-border': c.border,
+  } as React.CSSProperties
+}
+
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
@@ -243,23 +265,38 @@ export default function SalesPage() {
                   <div className="operator-section">
                     <div className="quick-btns">
                       {COIN_AMOUNTS.map(v => (
-                        <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
+                        <button
+                          key={v}
+                          className="quick-btn quick-btn--square quick-btn--money"
+                          style={moneyStyle(v)}
+                          onClick={() => addReceived(v)}
+                        >
                           <CoinIcon className="quick-btn-icon" />
-                          <span>{v.toLocaleString()}</span>
+                          <span className="quick-btn-amount">{v.toLocaleString()}</span>
                         </button>
                       ))}
                       {BILL_AMOUNTS.slice(0, 1).map(v => (
-                        <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
+                        <button
+                          key={v}
+                          className="quick-btn quick-btn--square quick-btn--money"
+                          style={moneyStyle(v)}
+                          onClick={() => addReceived(v)}
+                        >
                           <BillIcon className="quick-btn-icon" />
-                          <span>{v.toLocaleString()}</span>
+                          <span className="quick-btn-amount">{v.toLocaleString()}</span>
                         </button>
                       ))}
                     </div>
                     <div className="quick-btns">
                       {BILL_AMOUNTS.slice(1).map(v => (
-                        <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
+                        <button
+                          key={v}
+                          className="quick-btn quick-btn--square quick-btn--money"
+                          style={moneyStyle(v)}
+                          onClick={() => addReceived(v)}
+                        >
                           <BillIcon className="quick-btn-icon" />
-                          <span>{v.toLocaleString()}</span>
+                          <span className="quick-btn-amount">{v.toLocaleString()}</span>
                         </button>
                       ))}
                       <button className="quick-btn quick-btn--clear" onClick={() => setReceived('')}>
