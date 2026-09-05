@@ -40,13 +40,83 @@ export function BookIcon({ className }: IconProps) {
   )
 }
 
-/** 売上：棒グラフ */
+/** 売上：棒グラフ（底面に軸あり） */
 export function ChartIcon({ className }: IconProps) {
   return (
     <svg {...stroke} className={className}>
-      <rect x="3.4" y="12.4" width="4.8" height="7.6" rx="1.4" />
-      <rect x="9.6" y="6.6" width="4.8" height="13.4" rx="1.4" />
-      <rect x="15.8" y="9.4" width="4.8" height="10.6" rx="1.4" />
+      <path d="M2.6 20.4h18.8" />
+      <path d="M3.9 20.4V13a1.4 1.4 0 0 1 1.4-1.4h1.5A1.4 1.4 0 0 1 8.2 13v7.4" />
+      <path d="M9.9 20.4V7.2a1.4 1.4 0 0 1 1.4-1.4h1.5a1.4 1.4 0 0 1 1.4 1.4v13.2" />
+      <path d="M15.9 20.4v-10a1.4 1.4 0 0 1 1.4-1.4h1.5a1.4 1.4 0 0 1 1.4 1.4v10" />
+    </svg>
+  )
+}
+
+/** 硬貨 */
+export function CoinIcon({ className }: IconProps) {
+  return (
+    <svg {...stroke} className={className}>
+      <circle cx="12" cy="12" r="8.6" />
+      <circle cx="12" cy="12" r="4" />
+    </svg>
+  )
+}
+
+/** 紙幣 */
+export function BillIcon({ className }: IconProps) {
+  return (
+    <svg {...stroke} className={className}>
+      <rect x="2.4" y="6" width="19.2" height="12" rx="2.2" />
+      <circle cx="12" cy="12" r="2.6" />
+      <path d="M6 10v4" />
+      <path d="M18 10v4" />
+    </svg>
+  )
+}
+
+/** メモ：鉛筆 */
+export function PencilIcon({ className }: IconProps) {
+  return (
+    <svg {...stroke} className={className}>
+      <path d="M16.9 3.9a2.3 2.3 0 0 1 3.2 3.2L8.3 18.9l-4.2 1 1-4.2z" />
+      <path d="M15.3 5.5l3.2 3.2" />
+    </svg>
+  )
+}
+
+/** 電卓 */
+export function CalculatorIcon({ className }: IconProps) {
+  return (
+    <svg {...stroke} className={className}>
+      <rect x="4.6" y="2.6" width="14.8" height="18.8" rx="2.4" />
+      <rect x="7.8" y="5.8" width="8.4" height="3.4" rx="1" />
+      {[12.9, 16.4].map(cy =>
+        [8.6, 12, 15.4].map(cx => (
+          <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.05" fill="currentColor" stroke="none" />
+        ))
+      )}
+    </svg>
+  )
+}
+
+/** 書き出し */
+export function UploadIcon({ className }: IconProps) {
+  return (
+    <svg {...stroke} className={className}>
+      <path d="M12 15.2V3.6" />
+      <path d="M7.6 8 12 3.6 16.4 8" />
+      <path d="M3.8 16v2.4a2.2 2.2 0 0 0 2.2 2.2h12a2.2 2.2 0 0 0 2.2-2.2V16" />
+    </svg>
+  )
+}
+
+/** 読み込み */
+export function DownloadIcon({ className }: IconProps) {
+  return (
+    <svg {...stroke} className={className}>
+      <path d="M12 3.6v11.6" />
+      <path d="M7.6 10.8 12 15.2l4.4-4.4" />
+      <path d="M3.8 16v2.4a2.2 2.2 0 0 0 2.2 2.2h12a2.2 2.2 0 0 0 2.2-2.2V16" />
     </svg>
   )
 }

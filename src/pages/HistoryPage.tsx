@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { SaleRecord } from '../types'
 import { loadSales, saveSales, loadProducts } from '../store'
 import { saveFile } from '../fileSave'
+import { PencilIcon, UploadIcon } from '../icons'
 import './HistoryPage.css'
 
 function escapeCsv(value: string): string {
@@ -172,7 +173,7 @@ export default function HistoryPage() {
                 ) : (
                   <div className="memo-row" onClick={() => openMemoEdit(sale)}>
                     {sale.memo
-                      ? <span className="sale-memo">📝 {sale.memo}</span>
+                      ? <span className="sale-memo"><PencilIcon className="memo-icon" />{sale.memo}</span>
                       : <span className="memo-placeholder">＋ メモを追加</span>
                     }
                   </div>
@@ -182,7 +183,7 @@ export default function HistoryPage() {
           </div>
           <div className="export-btn-wrap">
             <button className="btn-secondary export-btn" onClick={handleExport}>
-              ⬇ CSVでエクスポート
+              <UploadIcon className="btn-icon" />CSVでエクスポート
             </button>
           </div>
           <div className="clear-btn-wrap">

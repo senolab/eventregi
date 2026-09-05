@@ -85,8 +85,14 @@
 }
 
 .input-mode-icon {
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
+  color: #999;
+}
+
+.input-mode-btn.selected .input-mode-icon {
+  color: var(--color-primary);
 }
 
 .input-mode-name {

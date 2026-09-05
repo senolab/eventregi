@@ -93,6 +93,14 @@ body {
   transition: opacity 0.15s;
 }
 
+/* ボタンのラベル横に置くアイコン */
+.btn-icon {
+  width: 17px;
+  height: 17px;
+  vertical-align: -3px;
+  margin-right: 7px;
+}
+
 .btn-primary {
   background: var(--color-primary);
   color: #fff;

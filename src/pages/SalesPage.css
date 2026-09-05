@@ -105,7 +105,9 @@
 }
 
 .product-card-icon {
-  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #c9c9c9;
 }
 
 .product-name {
@@ -337,8 +339,8 @@
 }
 
 .quick-btn-icon {
-  font-size: 20px;
-  line-height: 1;
+  width: 22px;
+  height: 22px;
 }
 
 .memo-input {

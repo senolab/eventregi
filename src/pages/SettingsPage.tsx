@@ -6,6 +6,7 @@ import {
 } from '../store'
 import type { InputMode } from '../store'
 import { saveFile } from '../fileSave'
+import { CalculatorIcon, CoinIcon, UploadIcon, DownloadIcon } from '../icons'
 import './SettingsPage.css'
 
 function backupFilename(): string {
@@ -109,7 +110,7 @@ export default function SettingsPage() {
             className={`input-mode-btn ${inputMode === 'calc' ? 'selected' : ''}`}
             onClick={() => handleInputMode('calc')}
           >
-            <span className="input-mode-icon">🔢</span>
+            <CalculatorIcon className="input-mode-icon" />
             <span className="input-mode-name">電卓入力</span>
             <span className="input-mode-desc">数字キーで直接入力</span>
           </button>
@@ -117,7 +118,7 @@ export default function SettingsPage() {
             className={`input-mode-btn ${inputMode === 'buttons' ? 'selected' : ''}`}
             onClick={() => handleInputMode('buttons')}
           >
-            <span className="input-mode-icon">🪙</span>
+            <CoinIcon className="input-mode-icon" />
             <span className="input-mode-name">ボタン入力</span>
             <span className="input-mode-desc">硬貨・紙幣ボタンで加算</span>
           </button>
@@ -150,10 +151,10 @@ export default function SettingsPage() {
         </p>
         <div className="backup-actions">
           <button className="btn-secondary backup-btn" onClick={handleBackup}>
-            ⬆ バックアップを書き出す
+            <UploadIcon className="btn-icon" />バックアップを書き出す
           </button>
           <button className="btn-secondary backup-btn" onClick={() => restoreInputRef.current?.click()}>
-            ⬇ バックアップから復元
+            <DownloadIcon className="btn-icon" />バックアップから復元
           </button>
         </div>
         <input

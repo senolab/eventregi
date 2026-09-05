@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { Product, CartItem, SaleRecord } from '../types'
 import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode, generateId } from '../store'
 import type { InputMode } from '../store'
+import { BookIcon, CoinIcon, BillIcon } from '../icons'
 import './SalesPage.css'
 
 const COIN_AMOUNTS = [100, 500]
@@ -166,7 +167,7 @@ export default function SalesPage() {
                     <div className="product-card-image-wrap">
                       {product.image
                         ? <img src={product.image} className="product-card-img" alt={product.name} />
-                        : <span className="product-card-icon">📚</span>
+                        : <BookIcon className="product-card-icon" />
                       }
                     </div>
                     <span className="product-name">{product.name}</span>
@@ -243,13 +244,13 @@ export default function SalesPage() {
                     <div className="quick-btns">
                       {COIN_AMOUNTS.map(v => (
                         <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
-                          <span className="quick-btn-icon">🪙</span>
+                          <CoinIcon className="quick-btn-icon" />
                           <span>{v.toLocaleString()}</span>
                         </button>
                       ))}
                       {BILL_AMOUNTS.slice(0, 1).map(v => (
                         <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
-                          <span className="quick-btn-icon">💴</span>
+                          <BillIcon className="quick-btn-icon" />
                           <span>{v.toLocaleString()}</span>
                         </button>
                       ))}
@@ -257,7 +258,7 @@ export default function SalesPage() {
                     <div className="quick-btns">
                       {BILL_AMOUNTS.slice(1).map(v => (
                         <button key={v} className="quick-btn quick-btn--square" onClick={() => addReceived(v)}>
-                          <span className="quick-btn-icon">💴</span>
+                          <BillIcon className="quick-btn-icon" />
                           <span>{v.toLocaleString()}</span>
                         </button>
                       ))}

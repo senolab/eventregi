@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Product } from '../types'
 import { loadProducts, saveProducts, generateId } from '../store'
+import { BookIcon } from '../icons'
 import './ProductsPage.css'
 
 type FormState = {
@@ -148,7 +149,7 @@ export default function ProductsPage() {
             </div>
             {product.image
               ? <img src={product.image} className="product-thumb" alt={product.name} />
-              : <div className="product-thumb-placeholder">📚</div>
+              : <div className="product-thumb-placeholder"><BookIcon className="product-thumb-icon" /></div>
             }
             <div className="product-info">
               <span className="product-row-name">{product.name}</span>
