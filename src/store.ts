@@ -61,3 +61,86 @@ export function loadInputMode(): InputMode {
 export function saveInputMode(mode: InputMode): void {
   localStorage.setItem(INPUT_MODE_KEY, mode)
 }
+
+/* ---------------- バックアップ ----------------
+ * iOS ではホーム画面アプリと Safari で保存領域が分かれており、機種変更や
+ * 再インストールでもデータは引き継がれない。書き出し／復元で移せるようにする。
+ */
+
+const BACKUP_APP = 'eventregi'
+const BACKUP_VERSION = 1
+
+export interface BackupData {
+  app: string
+  version: number
+  exportedAt: string
+  products: Product[]
+  sales: SaleRecord[]
+  settings: {
+    themeId: string | null
+    gridColumns: number
+    inputMode: InputMode
+  }
+}
+
+export function buildBackup(): BackupData {
+  return {
+    app: BACKUP_APP,
+    version: BACKUP_VERSION,
+    exportedAt: new Date().toISOString(),
+    products: loadProducts(),
+    sales: loadSales(),
+    settings: {
+      themeId: loadThemeId(),
+      gridColumns: loadGridColumns(),
+      inputMode: loadInputMode(),
+    },
+  }
+}
+
+function isProduct(v: unknown): v is Product {
+  const p = v as Product
+  return !!p && typeof p === 'object'
+    && typeof p.id === 'string' && typeof p.name === 'string'
+    && typeof p.price === 'number' && typeof p.stock === 'number'
+}
+
+function isSale(v: unknown): v is SaleRecord {
+  const s = v as SaleRecord
+  return !!s && typeof s === 'object'
+    && typeof s.id === 'string' && typeof s.date === 'string'
+    && typeof s.total === 'number' && Array.isArray(s.items)
+    && s.items.every(i =>
+      !!i && typeof i.name === 'string'
+      && typeof i.price === 'number' && typeof i.quantity === 'number')
+}
+
+/** バックアップを読み込んで内容を検証する。書き込みはまだ行わない */
+export function parseBackup(text: string): BackupData {
+  let data: unknown
+  try {
+    data = JSON.parse(text)
+  } catch {
+    throw new Error('ファイルを読み取れませんでした')
+  }
+  const d = data as Partial<BackupData>
+  if (!d || typeof d !== 'object' || !Array.isArray(d.products) || !Array.isArray(d.sales)) {
+    throw new Error('このアプリのバックアップファイルではないようです')
+  }
+  if (!d.products.every(isProduct) || !d.sales.every(isSale)) {
+    throw new Error('データが壊れているため復元できません')
+  }
+  return d as BackupData
+}
+
+/** 検証済みのバックアップで現在のデータを置き換える */
+export function restoreBackup(backup: BackupData): void {
+  saveProducts(backup.products)
+  saveSales(backup.sales)
+  const s = backup.settings
+  if (s) {
+    if (typeof s.themeId === 'string') saveThemeId(s.themeId)
+    if (typeof s.gridColumns === 'number') saveGridColumns(s.gridColumns)
+    if (s.inputMode === 'buttons' || s.inputMode === 'calc') saveInputMode(s.inputMode)
+  }
+}

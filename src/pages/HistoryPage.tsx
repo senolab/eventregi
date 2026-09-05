@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { SaleRecord } from '../types'
 import { loadSales, saveSales, loadProducts } from '../store'
+import { saveFile } from '../fileSave'
 import './HistoryPage.css'
 
 function escapeCsv(value: string): string {
@@ -86,13 +87,7 @@ export default function HistoryPage() {
       .join('\r\n')
 
     // Excel が UTF-8 と認識できるよう BOM を付ける
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `売上_${fileStamp()}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    saveFile(`売上_${fileStamp()}.csv`, 'text/csv;charset=utf-8', '﻿' + csv)
   }
 
   const openMemoEdit = (sale: SaleRecord) => {

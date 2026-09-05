@@ -1,13 +1,25 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { THEMES, DEFAULT_THEME_ID, applyTheme } from '../themes'
-import { loadThemeId, saveThemeId, loadGridColumns, saveGridColumns, loadInputMode, saveInputMode } from '../store'
+import {
+  loadThemeId, saveThemeId, loadGridColumns, saveGridColumns, loadInputMode, saveInputMode,
+  buildBackup, parseBackup, restoreBackup,
+} from '../store'
 import type { InputMode } from '../store'
+import { saveFile } from '../fileSave'
 import './SettingsPage.css'
+
+function backupFilename(): string {
+  const d = new Date()
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `イベントレジ_バックアップ_${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.json`
+}
 
 export default function SettingsPage() {
   const [selectedId, setSelectedId] = useState(DEFAULT_THEME_ID)
   const [gridColumns, setGridColumns] = useState(3)
   const [inputMode, setInputMode] = useState<InputMode>('buttons')
+  const [backupMessage, setBackupMessage] = useState<{ text: string; error: boolean } | null>(null)
+  const restoreInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setSelectedId(loadThemeId() ?? DEFAULT_THEME_ID)
@@ -30,6 +42,40 @@ export default function SettingsPage() {
   const handleInputMode = (mode: InputMode) => {
     saveInputMode(mode)
     setInputMode(mode)
+  }
+
+  const handleBackup = async () => {
+    const backup = buildBackup()
+    try {
+      await saveFile(backupFilename(), 'application/json', JSON.stringify(backup, null, 2))
+      setBackupMessage({
+        text: `商品${backup.products.length}件・売上${backup.sales.length}件を書き出しました`,
+        error: false,
+      })
+    } catch {
+      setBackupMessage({ text: '書き出しに失敗しました', error: true })
+    }
+  }
+
+  const handleRestoreFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    // 同じファイルを連続で選べるように値をリセットしておく
+    e.target.value = ''
+    if (!file) return
+
+    try {
+      const backup = parseBackup(await file.text())
+      const ok = confirm(
+        `商品${backup.products.length}件・売上${backup.sales.length}件を復元します。\n`
+        + '現在のデータはすべて置き換わります。よろしいですか？'
+      )
+      if (!ok) return
+      restoreBackup(backup)
+      // テーマや列数も含めて確実に反映させるため読み込み直す
+      location.reload()
+    } catch (err) {
+      setBackupMessage({ text: (err as Error).message, error: true })
+    }
   }
 
   return (
@@ -94,6 +140,38 @@ export default function SettingsPage() {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-label">データのバックアップ</div>
+        <p className="settings-note">
+          ホーム画面のアプリとSafariでは保存場所が分かれています。機種変更や入れ直しに備えて、
+          イベント前後に書き出しておくと安心です。
+        </p>
+        <div className="backup-actions">
+          <button className="btn-secondary backup-btn" onClick={handleBackup}>
+            ⬆ バックアップを書き出す
+          </button>
+          <button className="btn-secondary backup-btn" onClick={() => restoreInputRef.current?.click()}>
+            ⬇ バックアップから復元
+          </button>
+        </div>
+        <input
+          ref={restoreInputRef}
+          type="file"
+          accept="application/json,.json"
+          style={{ display: 'none' }}
+          onChange={handleRestoreFile}
+        />
+        {backupMessage && (
+          <p className={`backup-message ${backupMessage.error ? 'error' : ''}`}>
+            {backupMessage.text}
+          </p>
+        )}
+      </div>
+
+      <div className="settings-version">
+        バージョン {new Date(__BUILD_TIME__).toLocaleString('ja-JP')}
       </div>
     </div>
   )
