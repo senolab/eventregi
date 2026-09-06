@@ -2,32 +2,38 @@ import { useState, useEffect } from 'react'
 import type { Product, CartItem, SaleRecord } from '../types'
 import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode, generateId } from '../store'
 import type { InputMode } from '../store'
-import { BookIcon, CoinIcon, BillIcon } from '../icons'
+import { BookIcon } from '../icons'
+import coin100 from '../assets/money/coin_100.webp'
+import coin500 from '../assets/money/coin_500.webp'
+import bill1000 from '../assets/money/bill_1000.webp'
+import bill5000 from '../assets/money/bill_5000.webp'
+import bill10000 from '../assets/money/bill_10000.webp'
 import './SalesPage.css'
 
 const COIN_AMOUNTS = [100, 500]
 const BILL_AMOUNTS = [1000, 5000, 10000]
 
-/**
- * 金種ごとの色。実物のお金の色に合わせてあるので、会計中に見分けやすい。
- * 100円=銀、500円=金、1000円=青、5000円=紫、10000円=茶。
- */
-const MONEY_COLORS: Record<number, { fg: string; bg: string; border: string }> = {
-  100: { fg: '#6b7280', bg: '#f4f5f7', border: '#d3d7dd' },
-  500: { fg: '#a97b1b', bg: '#fbf5e6', border: '#e6d3a3' },
-  1000: { fg: '#2f6fb5', bg: '#eaf2fa', border: '#b8d2ec' },
-  5000: { fg: '#7a52a5', bg: '#f3edfa', border: '#d5c4ea' },
-  10000: { fg: '#96603a', bg: '#f9f0e9', border: '#e3c9b3' },
+/** 金種ごとのイラスト（いらすとや）。色はイラスト自体が持つので地色は付けない */
+const MONEY_IMAGES: Record<number, string> = {
+  100: coin100,
+  500: coin500,
+  1000: bill1000,
+  5000: bill5000,
+  10000: bill10000,
 }
 
-function moneyStyle(amount: number): React.CSSProperties {
-  const c = MONEY_COLORS[amount]
-  if (!c) return {}
-  return {
-    '--money-fg': c.fg,
-    '--money-bg': c.bg,
-    '--money-border': c.border,
-  } as React.CSSProperties
+/** お預かり金の加算ボタン */
+function MoneyKey({ amount, onPress }: { amount: number; onPress: (v: number) => void }) {
+  const isCoin = COIN_AMOUNTS.includes(amount)
+  return (
+    <button
+      className={`quick-btn quick-btn--square quick-btn--money ${isCoin ? 'is-coin' : 'is-bill'}`}
+      onClick={() => onPress(amount)}
+    >
+      <img src={MONEY_IMAGES[amount]} className="money-img" alt="" />
+      <span className="quick-btn-amount">{amount.toLocaleString()}</span>
+    </button>
+  )
 }
 
 export default function SalesPage() {
@@ -265,39 +271,15 @@ export default function SalesPage() {
                   <div className="operator-section">
                     <div className="quick-btns">
                       {COIN_AMOUNTS.map(v => (
-                        <button
-                          key={v}
-                          className="quick-btn quick-btn--square quick-btn--money"
-                          style={moneyStyle(v)}
-                          onClick={() => addReceived(v)}
-                        >
-                          <CoinIcon className="quick-btn-icon" />
-                          <span className="quick-btn-amount">{v.toLocaleString()}</span>
-                        </button>
+                        <MoneyKey key={v} amount={v} onPress={addReceived} />
                       ))}
                       {BILL_AMOUNTS.slice(0, 1).map(v => (
-                        <button
-                          key={v}
-                          className="quick-btn quick-btn--square quick-btn--money"
-                          style={moneyStyle(v)}
-                          onClick={() => addReceived(v)}
-                        >
-                          <BillIcon className="quick-btn-icon" />
-                          <span className="quick-btn-amount">{v.toLocaleString()}</span>
-                        </button>
+                        <MoneyKey key={v} amount={v} onPress={addReceived} />
                       ))}
                     </div>
                     <div className="quick-btns">
                       {BILL_AMOUNTS.slice(1).map(v => (
-                        <button
-                          key={v}
-                          className="quick-btn quick-btn--square quick-btn--money"
-                          style={moneyStyle(v)}
-                          onClick={() => addReceived(v)}
-                        >
-                          <BillIcon className="quick-btn-icon" />
-                          <span className="quick-btn-amount">{v.toLocaleString()}</span>
-                        </button>
+                        <MoneyKey key={v} amount={v} onPress={addReceived} />
                       ))}
                       <button className="quick-btn quick-btn--clear" onClick={() => setReceived('')}>
                         <span>C</span>

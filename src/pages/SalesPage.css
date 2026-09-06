@@ -328,19 +328,31 @@
   font-size: 16px;
 }
 
-/* 金種ボタン：実物のお金の色で見分けられるようにする */
+/* 金種ボタン：見分けはイラストと数字が担うので、地色は他のボタンと揃える */
 .quick-btn--money {
-  background: var(--money-bg);
-  color: var(--money-fg);
-  border-color: var(--money-border);
+  gap: 4px;
+  padding: 9px 0 10px;
 }
 
-.quick-btn--money:active {
-  background: var(--money-border);
+.money-img {
+  display: block;
+  object-fit: contain;
+  /* 硬貨は正方形、紙幣は横長。高さを揃えると硬貨が小さく見えるので個別に指定する */
+}
+
+.is-coin .money-img {
+  width: 46px;
+  height: 46px;
+}
+
+.is-bill .money-img {
+  width: 100%;
+  max-width: 92px;
+  height: 46px;
 }
 
 .quick-btn-amount {
-  font-size: 19px;
+  font-size: 18px;
   letter-spacing: 0.02em;
 }
 

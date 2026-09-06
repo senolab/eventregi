@@ -14,6 +14,11 @@ export default defineConfig({
       registerType: 'autoUpdate',
       // 登録は src/pwa.ts で自前で行う（iOS 向けの更新処理を挟むため）
       injectRegister: null,
+      workbox: {
+        // 既定のパターンに webp が含まれておらず、お金のイラストが
+        // オフラインで表示できなくなるため明示する。会場は電波が悪いことが多い
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
+      },
       manifest: {
         name: 'イベントレジ',
         short_name: 'イベントレジ',
