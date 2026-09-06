@@ -517,3 +517,43 @@
   margin-top: 8px;
   max-width: 320px;
 }
+
+/* 会計時の注意書き（無配ペーパーなど）。見落とされないよう色で目立たせる */
+.note-banner {
+  background: #fff8e1;
+  border: 2px solid #f0c94a;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 12px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-banner-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.note-banner-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #b8860b;
+  margin-top: 1px;
+}
+
+.note-banner-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #7a5b06;
+  line-height: 1.5;
+}
+
+.note-banner-product {
+  display: block;
+  font-size: 11px;
+  font-weight: normal;
+  color: #a98a3f;
+}

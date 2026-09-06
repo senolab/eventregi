@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import type { Product, CartItem, SaleRecord } from '../types'
 import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode, generateId } from '../store'
 import type { InputMode } from '../store'
-import { BookIcon } from '../icons'
+import { BookIcon, GiftIcon } from '../icons'
 import coin100 from '../assets/money/coin_100.webp'
 import coin500 from '../assets/money/coin_500.webp'
 import bill1000 from '../assets/money/bill_1000.webp'
@@ -20,6 +20,26 @@ const MONEY_IMAGES: Record<number, string> = {
   1000: bill1000,
   5000: bill5000,
   10000: bill10000,
+}
+
+type CartNote = { name: string; note: string }
+
+/** 会計時の注意書き。渡し忘れを防ぐため目立たせる */
+function NoteBanner({ notes }: { notes: CartNote[] }) {
+  if (notes.length === 0) return null
+  return (
+    <div className="note-banner">
+      {notes.map(n => (
+        <div key={n.name} className="note-banner-row">
+          <GiftIcon className="note-banner-icon" />
+          <span className="note-banner-text">
+            <span className="note-banner-product">{n.name}</span>
+            {n.note}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 /** お預かり金の加算ボタン */
@@ -42,7 +62,9 @@ export default function SalesPage() {
   const [received, setReceived] = useState('')
   const [gridColumns, setGridColumns] = useState(2)
   const [step, setStep] = useState(0) // 0: 商品選択, 1: 合計確認, 2: お釣り計算, 3: 完了
-  const [completedSummary, setCompletedSummary] = useState<{ total: number; received: number; change: number } | null>(null)
+  const [completedSummary, setCompletedSummary] = useState<
+    { total: number; received: number; change: number; notes: CartNote[] } | null
+  >(null)
   const [inputMode, setInputMode] = useState<InputMode>('calc')
 
   useEffect(() => {
@@ -73,6 +95,11 @@ export default function SalesPage() {
       return [...prev, { product, quantity: 1 }]
     })
   }
+
+  // 会計時に伝えることがある商品（無配ペーパーなど）
+  const cartNotes: CartNote[] = cart
+    .filter(item => item.product.note)
+    .map(item => ({ name: item.product.name, note: item.product.note! }))
 
   const total = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
   const receivedNum = parseInt(received) || 0
@@ -121,7 +148,7 @@ export default function SalesPage() {
     }
     saveSales([record, ...loadSales()])
 
-    setCompletedSummary({ total, received: receivedNum, change: change ?? 0 })
+    setCompletedSummary({ total, received: receivedNum, change: change ?? 0, notes: cartNotes })
     setCart([])
     setReceived('')
     setStep(3)
@@ -234,6 +261,8 @@ export default function SalesPage() {
               <span className="receipt-total-amount">¥{total.toLocaleString()}</span>
             </div>
 
+            <NoteBanner notes={cartNotes} />
+
             {step === 1 && (
               <div className="cart-actions step1-actions">
                 <button className="btn-primary" onClick={handleGoToPayment}>
@@ -342,6 +371,7 @@ export default function SalesPage() {
               <span>¥{completedSummary.change.toLocaleString()}</span>
             </div>
           </div>
+          <NoteBanner notes={completedSummary.notes} />
           <button className="btn-primary complete-next-btn" onClick={handleNextCustomer}>
             次の会計へ
           </button>

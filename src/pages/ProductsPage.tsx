@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Product } from '../types'
 import { loadProducts, saveProducts, generateId } from '../store'
-import { BookIcon } from '../icons'
+import { BookIcon, GiftIcon } from '../icons'
 import './ProductsPage.css'
 
 type FormState = {
@@ -9,9 +9,10 @@ type FormState = {
   price: string
   stock: string
   image?: string
+  note: string
 }
 
-const emptyForm: FormState = { name: '', price: '', stock: '', image: undefined }
+const emptyForm: FormState = { name: '', price: '', stock: '', image: undefined, note: '' }
 
 function resizeImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -63,6 +64,7 @@ export default function ProductsPage() {
       price: product.price.toString(),
       stock: product.stock.toString(),
       image: product.image,
+      note: product.note ?? '',
     })
     setEditId(product.id)
     setShowForm(true)
@@ -81,9 +83,11 @@ export default function ProductsPage() {
     const stock = parseInt(form.stock)
     if (!name || isNaN(price) || isNaN(stock)) return
 
+    const note = form.note.trim() || undefined
+
     if (editId) {
       persist(products.map(p =>
-        p.id === editId ? { ...p, name, price, stock, image: form.image } : p
+        p.id === editId ? { ...p, name, price, stock, image: form.image, note } : p
       ))
     } else {
       const newProduct: Product = {
@@ -92,6 +96,7 @@ export default function ProductsPage() {
         price,
         stock,
         image: form.image,
+        note,
       }
       persist([...products, newProduct])
     }
@@ -156,6 +161,11 @@ export default function ProductsPage() {
               <span className="product-row-meta">
                 ¥{product.price.toLocaleString()} ／ 在庫 {product.stock}
               </span>
+              {product.note && (
+                <span className="product-row-note">
+                  <GiftIcon className="product-row-note-icon" />{product.note}
+                </span>
+              )}
             </div>
             <div className="product-row-actions">
               <button className="btn-secondary" onClick={() => openEdit(product)}>編集</button>
@@ -220,6 +230,17 @@ export default function ProductsPage() {
             value={form.stock}
             onChange={e => setForm({ ...form, stock: e.target.value })}
           />
+          <label>会計時のメモ（任意）</label>
+          <input
+            type="text"
+            placeholder="例：無配ペーパーを付ける"
+            value={form.note}
+            onChange={e => setForm({ ...form, note: e.target.value })}
+          />
+          <p className="form-hint">
+            この商品が選ばれると、お会計と会計完了の画面に表示されます。
+          </p>
+
           <div className="form-actions">
             <button className="btn-secondary" onClick={() => setShowForm(false)}>キャンセル</button>
             <button className="btn-primary save-btn" onClick={handleSave}>保存</button>

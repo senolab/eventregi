@@ -4,6 +4,8 @@ export interface Product {
   price: number
   stock: number
   image?: string
+  /** 会計時に出す注意書き。無配ペーパーなどの渡し忘れ防止に使う */
+  note?: string
 }
 
 export interface CartItem {

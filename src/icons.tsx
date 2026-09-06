@@ -74,6 +74,19 @@ export function BillIcon({ className }: IconProps) {
   )
 }
 
+/** おまけ：贈り物 */
+export function GiftIcon({ className }: IconProps) {
+  return (
+    <svg {...stroke} className={className}>
+      <rect x="3" y="9.6" width="18" height="4.2" rx="1.2" />
+      <path d="M4.6 13.8v5.6a1.8 1.8 0 0 0 1.8 1.8h11.2a1.8 1.8 0 0 0 1.8-1.8v-5.6" />
+      <path d="M12 9.6v11.6" />
+      <path d="M12 9.6C11 6.4 9.6 5 8.2 5a2.3 2.3 0 0 0 0 4.6Z" />
+      <path d="M12 9.6C13 6.4 14.4 5 15.8 5a2.3 2.3 0 0 1 0 4.6Z" />
+    </svg>
+  )
+}
+
 /** メモ：鉛筆 */
 export function PencilIcon({ className }: IconProps) {
   return (
