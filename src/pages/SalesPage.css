@@ -169,52 +169,70 @@
 }
 
 /* ===== お会計画面（step2）のレイアウト =====
- * おまけバナーや商品が増えても電卓が画面外に出ないよう、
- * 画面の高さいっぱいに収め、上側だけスクロールさせる。
+ * おまけや商品が増えても金額と電卓が画面外に出ないよう、
+ * タブバーの上までの高さにぴったり収め、明細だけをスクロールさせる。
  */
 .sales-page--pay {
-  /* .main の内容高（タブバーとセーフエリアを除いた高さ）にぴったり収める。
+  /* .main の内容高（タブバーとセーフエリアを除いた高さ）に合わせる。
    * .sales-page の min-height はタブバーの高さと合っていないので打ち消す */
   height: 100%;
   min-height: 0;
 }
 
-.sales-page--pay .checkout-panel--fullpage {
+.sales-page--pay .checkout-panel--fullpage,
+.sales-page--pay .receipt-section {
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 
 .sales-page--pay .receipt-section {
-  display: flex;
-  flex-direction: column;
   flex: 1;
-  min-height: 0;
-  /* 万一入りきらなくても確定ボタン帯に重ねない */
+  /* 万一入りきらなくても確定ボタン帯には重ねない */
   overflow: hidden;
 }
 
 /* 明細。溢れたらここだけスクロールする。
- * 狭いときは金額や電卓より先にここを削るよう、縮みやすさを大きくしている */
+ * 縮みやすさを大きくして、金額や電卓より先にここが削られるようにする */
 .sales-page--pay .pay-scroll {
-  flex: 1 100 auto;
+  flex-grow: 1;
+  flex-shrink: 100;
   min-height: 48px;
   overflow-y: auto;
 }
 
-/* おまけの案内・合計・お預かり・お釣り・電卓。基本は縮めないが、
- * セーフエリアの広い端末やおまけが多いときは電卓だけ少し詰める */
+/* おまけの件数・合計・お預かり・お釣り・電卓。会計中に必ず見たいので優先して残す */
 .sales-page--pay .pay-pinned {
-  flex: 0 1 auto;
-  min-height: 0;
   display: flex;
   flex-direction: column;
+  flex: 0 1 auto;
+  min-height: 0;
 }
 
+/* 画面に収めるため、会計中は各部をやや詰める */
+.sales-page--pay .receipt-received-row {
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.sales-page--pay .receipt-change {
+  margin-top: 9px;
+  padding-top: 9px;
+}
+
+/* 以下は、セーフエリアの広い端末など余白が足りないときに
+ * 少しずつ縮んで収まるようにするための指定。通常は最大サイズのまま */
 .sales-page--pay .calc-pad,
 .sales-page--pay .operator-section {
   flex: 0 1 auto;
   min-height: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sales-page--pay .calc-pad {
+  padding-top: 8px;
+  padding-bottom: 0;
 }
 
 .sales-page--pay .calc-row {
@@ -222,8 +240,13 @@
   min-height: 0;
 }
 
-/* 金種ボタンはお金の絵の高さが固定で縮めないため、入りきらないときに
- * 切れてしまう。念のため絵を少しだけ縮められるようにしておく */
+/* 縮むときの下限。Apple の推奨（44pt）は確保する */
+.sales-page--pay .calc-key {
+  padding: 10px 0;
+  min-height: 44px;
+}
+
+/* 金種ボタンは絵の高さが固定だと縮めず切れてしまうので可変にしておく */
 .sales-page--pay .quick-btns {
   flex: 0 1 auto;
   min-height: 0;
@@ -244,77 +267,6 @@
   width: auto;
   max-width: 46px;
   aspect-ratio: 1 / 1;
-}
-
-/* おまけの予告（件数のみ）。全文は前の画面と会計完了の画面に出す */
-.note-summary {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: #fff8e1;
-  border: 2px solid #f0c94a;
-  border-radius: 10px;
-  padding: 7px 11px;
-  margin-bottom: 4px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #7a5b06;
-}
-
-.note-summary-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  color: #b8860b;
-}
-
-/* 明細のどの商品におまけが付くかを示す印 */
-.receipt-item-gift {
-  width: 13px;
-  height: 13px;
-  color: #b8860b;
-  vertical-align: -2px;
-  margin-right: 4px;
-}
-
-.sales-page--pay .calc-pad,
-.sales-page--pay .operator-section {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-/* 画面に収めるため、会計中は各部をやや詰める */
-.sales-page--pay .note-banner {
-  padding: 8px 11px;
-  gap: 5px;
-  margin: 0 0 4px;
-}
-
-/* 商品名を同じ行に置いて高さを半分にする */
-.sales-page--pay .note-banner-product {
-  display: inline;
-  margin-right: 6px;
-}
-
-.sales-page--pay .receipt-received-row {
-  margin-top: 8px;
-  padding-top: 8px;
-}
-
-.sales-page--pay .receipt-change {
-  margin-top: 9px;
-  padding-top: 9px;
-}
-
-.sales-page--pay .calc-pad {
-  padding-top: 8px;
-  padding-bottom: 0;
-}
-
-/* 縮むときの下限。Apple の推奨（44pt）は確保する */
-.sales-page--pay .calc-key {
-  padding: 10px 0;
-  min-height: 44px;
 }
 
 /* 確定ボタン帯も通常の流れに入れて、高さの取り合いをなくす */
@@ -715,4 +667,35 @@
   font-size: 11px;
   font-weight: normal;
   color: #a98a3f;
+}
+
+/* お会計画面用の予告（件数のみ）。全文は前の画面と会計完了の画面に出す */
+.note-summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff8e1;
+  border: 2px solid #f0c94a;
+  border-radius: 10px;
+  padding: 7px 11px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #7a5b06;
+}
+
+.note-summary-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #b8860b;
+}
+
+/* 明細のどの商品におまけが付くかを示す印 */
+.receipt-item-gift {
+  width: 13px;
+  height: 13px;
+  color: #b8860b;
+  vertical-align: -2px;
+  margin-right: 4px;
 }
