@@ -181,8 +181,16 @@ export default function SalesPage() {
     ['00', '0', 'C'],
   ]
 
+  // step1 では明細と一緒に流し、step2 では常に見える側に置くので使い回す
+  const totalRow = (
+    <div className="receipt-total-row">
+      <span>合計</span>
+      <span className="receipt-total-amount">¥{total.toLocaleString()}</span>
+    </div>
+  )
+
   return (
-    <div className="sales-page">
+    <div className={`sales-page${step === 2 ? ' sales-page--pay' : ''}`}>
       <div className="page-header">
         レジ
         {cart.length > 0 && step !== 2 && (
@@ -206,7 +214,9 @@ export default function SalesPage() {
             >
               <div
                 className="product-grid"
-                style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
+                // 1fr は最小値が min-content になるため、折り返せない商品名
+                // （英数字など）があるとその列だけ広がる。minmax(0, …) で等幅にする
+                style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
               >
               {products.map(product => {
                 const qty = cartQuantity(product.id)
@@ -242,37 +252,42 @@ export default function SalesPage() {
       {cart.length > 0 && (step === 1 || step === 2) && (
         <div className={`checkout-panel${step === 2 ? ' checkout-panel--fullpage' : ''}`}>
           <div className="receipt-section">
-            <div className="receipt-header">お会計</div>
-            <div className="receipt-items">
-              {cart.map(item => (
-                <div key={item.product.id} className="receipt-item">
-                  <div className="receipt-item-left">
-                    <span className="receipt-item-name">{item.product.name}</span>
-                    <span className="receipt-item-unit">¥{item.product.price.toLocaleString()} × {item.quantity}</span>
+            {/* 明細とおまけの案内。入りきらないときはここだけスクロールする */}
+            <div className="pay-scroll">
+              <div className="receipt-header">お会計</div>
+              <div className="receipt-items">
+                {cart.map(item => (
+                  <div key={item.product.id} className="receipt-item">
+                    <div className="receipt-item-left">
+                      <span className="receipt-item-name">{item.product.name}</span>
+                      <span className="receipt-item-unit">¥{item.product.price.toLocaleString()} × {item.quantity}</span>
+                    </div>
+                    <span className="receipt-item-total">
+                      ¥{(item.product.price * item.quantity).toLocaleString()}
+                    </span>
                   </div>
-                  <span className="receipt-item-total">
-                    ¥{(item.product.price * item.quantity).toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="receipt-total-row">
-              <span>合計</span>
-              <span className="receipt-total-amount">¥{total.toLocaleString()}</span>
-            </div>
-
-            <NoteBanner notes={cartNotes} />
-
-            {step === 1 && (
-              <div className="cart-actions step1-actions">
-                <button className="btn-primary" onClick={handleGoToPayment}>
-                  お会計へ
-                </button>
+                ))}
               </div>
-            )}
 
+              {step === 1 && (
+                <>
+                  {totalRow}
+                  <NoteBanner notes={cartNotes} />
+                  <div className="cart-actions step1-actions">
+                    <button className="btn-primary" onClick={handleGoToPayment}>
+                      お会計へ
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* おまけの案内・金額・電卓は常に見えるようスクロール領域の外に置く */}
             {step === 2 && (
-              <>
+              <div className="pay-pinned">
+                <NoteBanner notes={cartNotes} />
+                {totalRow}
+
                 {/* お預かり表示 */}
                 <div className="receipt-received-row">
                   <span className="receipt-received-label">お預かり</span>
@@ -295,7 +310,6 @@ export default function SalesPage() {
                   </span>
                 </div>
 
-                {/* 操作エリア */}
                 {inputMode === 'buttons' ? (
                   <div className="operator-section">
                     <div className="quick-btns">
@@ -332,7 +346,7 @@ export default function SalesPage() {
                     ))}
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
