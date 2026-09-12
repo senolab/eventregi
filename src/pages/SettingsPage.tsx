@@ -3,6 +3,7 @@ import { THEMES, DEFAULT_THEME_ID, applyTheme } from '../themes'
 import {
   loadThemeId, saveThemeId, loadGridColumns, saveGridColumns, loadInputMode, saveInputMode,
   buildBackup, parseBackup, restoreBackup,
+  DEFAULT_GRID_COLUMNS, DEFAULT_INPUT_MODE,
 } from '../store'
 import type { InputMode } from '../store'
 import { saveFile } from '../fileSave'
@@ -17,8 +18,8 @@ function backupFilename(): string {
 
 export default function SettingsPage() {
   const [selectedId, setSelectedId] = useState(DEFAULT_THEME_ID)
-  const [gridColumns, setGridColumns] = useState(3)
-  const [inputMode, setInputMode] = useState<InputMode>('buttons')
+  const [gridColumns, setGridColumns] = useState(DEFAULT_GRID_COLUMNS)
+  const [inputMode, setInputMode] = useState<InputMode>(DEFAULT_INPUT_MODE)
   const [backupMessage, setBackupMessage] = useState<{ text: string; error: boolean } | null>(null)
   const restoreInputRef = useRef<HTMLInputElement>(null)
 

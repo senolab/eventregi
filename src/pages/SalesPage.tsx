@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import type { Product, CartItem, SaleRecord } from '../types'
-import { loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode, generateId } from '../store'
+import {
+  loadProducts, saveProducts, loadSales, saveSales, loadGridColumns, loadInputMode, generateId,
+  DEFAULT_GRID_COLUMNS, DEFAULT_INPUT_MODE,
+} from '../store'
 import type { InputMode } from '../store'
 import { BookIcon, GiftIcon } from '../icons'
 import coin100 from '../assets/money/coin_100.webp'
@@ -60,12 +63,12 @@ export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
   const [received, setReceived] = useState('')
-  const [gridColumns, setGridColumns] = useState(2)
+  const [gridColumns, setGridColumns] = useState(DEFAULT_GRID_COLUMNS)
   const [step, setStep] = useState(0) // 0: 商品選択, 1: 合計確認, 2: お釣り計算, 3: 完了
   const [completedSummary, setCompletedSummary] = useState<
     { total: number; received: number; change: number; notes: CartNote[] } | null
   >(null)
-  const [inputMode, setInputMode] = useState<InputMode>('calc')
+  const [inputMode, setInputMode] = useState<InputMode>(DEFAULT_INPUT_MODE)
 
   useEffect(() => {
     setProducts(loadProducts())

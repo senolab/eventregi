@@ -43,8 +43,12 @@ export function saveThemeId(id: string): void {
 
 const GRID_KEY = 'eventreji_grid'
 
+/** 各画面の useState 初期値にも使う。ここを唯一の基準にしてずれを防ぐ */
+export const DEFAULT_GRID_COLUMNS = 3
+
 export function loadGridColumns(): number {
-  return parseInt(localStorage.getItem(GRID_KEY) ?? '3')
+  const n = parseInt(localStorage.getItem(GRID_KEY) ?? '')
+  return Number.isFinite(n) ? n : DEFAULT_GRID_COLUMNS
 }
 
 export function saveGridColumns(n: number): void {
@@ -54,8 +58,11 @@ export function saveGridColumns(n: number): void {
 const INPUT_MODE_KEY = 'eventreji_input_mode'
 export type InputMode = 'buttons' | 'calc'
 
+export const DEFAULT_INPUT_MODE: InputMode = 'calc'
+
 export function loadInputMode(): InputMode {
-  return (localStorage.getItem(INPUT_MODE_KEY) as InputMode) ?? 'calc'
+  const v = localStorage.getItem(INPUT_MODE_KEY)
+  return v === 'buttons' || v === 'calc' ? v : DEFAULT_INPUT_MODE
 }
 
 export function saveInputMode(mode: InputMode): void {
