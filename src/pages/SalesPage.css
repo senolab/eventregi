@@ -1,7 +1,9 @@
 .sales-page {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 65px);
+  /* .main の内容高（タブバーとセーフエリアを除いた高さ）にそろえる。
+   * 高さを直接書くとタブバーの高さと二重管理になり、ずれて下が切れる */
+  min-height: 100%;
 }
 
 .empty-state {
@@ -172,11 +174,9 @@
  * おまけや商品が増えても金額と電卓が画面外に出ないよう、
  * タブバーの上までの高さにぴったり収め、明細だけをスクロールさせる。
  */
+/* 中の要素を高さで配分するため、伸縮ではなく確定した高さにする */
 .sales-page--pay {
-  /* .main の内容高（タブバーとセーフエリアを除いた高さ）に合わせる。
-   * .sales-page の min-height はタブバーの高さと合っていないので打ち消す */
   height: 100%;
-  min-height: 0;
 }
 
 .sales-page--pay .checkout-panel--fullpage,
