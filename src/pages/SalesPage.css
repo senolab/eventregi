@@ -173,7 +173,10 @@
  * 画面の高さいっぱいに収め、上側だけスクロールさせる。
  */
 .sales-page--pay {
+  /* .main の内容高（タブバーとセーフエリアを除いた高さ）にぴったり収める。
+   * .sales-page の min-height はタブバーの高さと合っていないので打ち消す */
   height: 100%;
+  min-height: 0;
 }
 
 .sales-page--pay .checkout-panel--fullpage {
@@ -187,18 +190,91 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  /* 万一入りきらなくても確定ボタン帯に重ねない */
+  overflow: hidden;
 }
 
-/* 明細。溢れたらここだけスクロールする。最低2行ぶんは残す */
+/* 明細。溢れたらここだけスクロールする。
+ * 狭いときは金額や電卓より先にここを削るよう、縮みやすさを大きくしている */
 .sales-page--pay .pay-scroll {
-  flex: 1 1 auto;
-  min-height: 72px;
+  flex: 1 100 auto;
+  min-height: 48px;
   overflow-y: auto;
 }
 
-/* おまけの案内・合計・お預かり・お釣り・電卓。会計中に必ず見たいので縮めない */
+/* おまけの案内・合計・お預かり・お釣り・電卓。基本は縮めないが、
+ * セーフエリアの広い端末やおまけが多いときは電卓だけ少し詰める */
 .sales-page--pay .pay-pinned {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-page--pay .calc-pad,
+.sales-page--pay .operator-section {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.sales-page--pay .calc-row {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+/* 金種ボタンはお金の絵の高さが固定で縮めないため、入りきらないときに
+ * 切れてしまう。念のため絵を少しだけ縮められるようにしておく */
+.sales-page--pay .quick-btns {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.sales-page--pay .quick-btn--money {
+  min-height: 0;
+}
+
+.sales-page--pay .money-img {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 36px;
+  max-height: 46px;
+}
+
+.sales-page--pay .is-coin .money-img {
+  width: auto;
+  max-width: 46px;
+  aspect-ratio: 1 / 1;
+}
+
+/* おまけの予告（件数のみ）。全文は前の画面と会計完了の画面に出す */
+.note-summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff8e1;
+  border: 2px solid #f0c94a;
+  border-radius: 10px;
+  padding: 7px 11px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #7a5b06;
+}
+
+.note-summary-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #b8860b;
+}
+
+/* 明細のどの商品におまけが付くかを示す印 */
+.receipt-item-gift {
+  width: 13px;
+  height: 13px;
+  color: #b8860b;
+  vertical-align: -2px;
+  margin-right: 4px;
 }
 
 .sales-page--pay .calc-pad,
@@ -235,9 +311,10 @@
   padding-bottom: 0;
 }
 
+/* 縮むときの下限。Apple の推奨（44pt）は確保する */
 .sales-page--pay .calc-key {
-  padding: 12px 0;
-  min-height: 48px;
+  padding: 10px 0;
+  min-height: 44px;
 }
 
 /* 確定ボタン帯も通常の流れに入れて、高さの取り合いをなくす */
@@ -248,6 +325,8 @@
   max-width: none;
   flex-shrink: 0;
   box-shadow: none;
+  /* 画面下端ではなくタブバーの上に並ぶので、セーフエリアを重ねて空けない */
+  padding-bottom: 12px;
 }
 
 .receipt-header {

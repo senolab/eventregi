@@ -27,6 +27,20 @@ const MONEY_IMAGES: Record<number, string> = {
 
 type CartNote = { name: string; note: string }
 
+/**
+ * お会計画面用の短い予告。ここは金額と電卓に場所を譲りたいので件数だけ出す。
+ * 全文は直前の画面と会計完了の画面に出るので、渡し忘れには気づける。
+ */
+function NoteSummary({ notes }: { notes: CartNote[] }) {
+  if (notes.length === 0) return null
+  return (
+    <div className="note-summary">
+      <GiftIcon className="note-summary-icon" />
+      おまけあり（{notes.length}件）
+    </div>
+  )
+}
+
 /** 会計時の注意書き。渡し忘れを防ぐため目立たせる */
 function NoteBanner({ notes }: { notes: CartNote[] }) {
   if (notes.length === 0) return null
@@ -257,12 +271,15 @@ export default function SalesPage() {
           <div className="receipt-section">
             {/* 明細とおまけの案内。入りきらないときはここだけスクロールする */}
             <div className="pay-scroll">
-              <div className="receipt-header">お会計</div>
+              {step === 1 && <div className="receipt-header">お会計</div>}
               <div className="receipt-items">
                 {cart.map(item => (
                   <div key={item.product.id} className="receipt-item">
                     <div className="receipt-item-left">
-                      <span className="receipt-item-name">{item.product.name}</span>
+                      <span className="receipt-item-name">
+                        {item.product.note && <GiftIcon className="receipt-item-gift" />}
+                        {item.product.name}
+                      </span>
                       <span className="receipt-item-unit">¥{item.product.price.toLocaleString()} × {item.quantity}</span>
                     </div>
                     <span className="receipt-item-total">
@@ -288,7 +305,7 @@ export default function SalesPage() {
             {/* おまけの案内・金額・電卓は常に見えるようスクロール領域の外に置く */}
             {step === 2 && (
               <div className="pay-pinned">
-                <NoteBanner notes={cartNotes} />
+                <NoteSummary notes={cartNotes} />
                 {totalRow}
 
                 {/* お預かり表示 */}
