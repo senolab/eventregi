@@ -9,6 +9,21 @@ function escapeCsv(value: string): string {
   return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value
 }
 
+/**
+ * 売上が立った時刻（0〜23）。timestamp があればそれを使い、
+ * 無い古い記録は表示用の文字列から拾う。読めなければ null。
+ */
+function saleHour(sale: SaleRecord): number | null {
+  if (sale.timestamp) {
+    const d = new Date(sale.timestamp)
+    if (!isNaN(d.getTime())) return d.getHours()
+  }
+  const m = sale.date.match(/(\d{1,2}):\d{2}/)
+  if (!m) return null
+  const h = parseInt(m[1])
+  return h >= 0 && h <= 23 ? h : null
+}
+
 function fileStamp(): string {
   const d = new Date()
   const p = (n: number) => String(n).padStart(2, '0')
@@ -29,6 +44,34 @@ export default function HistoryPage() {
   }, [])
 
   const totalRevenue = sales.reduce((sum, s) => sum + s.total, 0)
+
+  const totalCopies = sales.reduce(
+    (sum, s) => sum + s.items.reduce((n, i) => n + i.quantity, 0), 0
+  )
+
+  /**
+   * 時間帯ごとの頒布数。売れた時間の範囲だけを、間を空けずに並べる。
+   * 記録件数はイベント1日で多くても数百なので、その都度数え直して問題ない。
+   */
+  const hourly = (() => {
+    const perHour = new Map<number, number>()
+    for (const sale of sales) {
+      const hour = saleHour(sale)
+      if (hour === null) continue
+      const copies = sale.items.reduce((n, i) => n + i.quantity, 0)
+      perHour.set(hour, (perHour.get(hour) ?? 0) + copies)
+    }
+    if (perHour.size === 0) return []
+    const hours = [...perHour.keys()]
+    const from = Math.min(...hours)
+    const to = Math.max(...hours)
+    return Array.from({ length: to - from + 1 }, (_, i) => ({
+      hour: from + i,
+      copies: perHour.get(from + i) ?? 0,
+    }))
+  })()
+
+  const hourlyMax = Math.max(1, ...hourly.map(h => h.copies))
 
   const productSummary = (() => {
     const map = new Map<string, { quantity: number; revenue: number }>()
@@ -132,10 +175,36 @@ export default function HistoryPage() {
             </div>
             <div className="summary-divider" />
             <div className="summary-item">
+              <span className="summary-label">頒布総数</span>
+              <span className="summary-value">{totalCopies}冊</span>
+            </div>
+            <div className="summary-divider" />
+            <div className="summary-item">
               <span className="summary-label">会計回数</span>
               <span className="summary-value">{sales.length}回</span>
             </div>
           </div>
+
+          {hourly.length > 0 && (
+            <div className="hourly-card">
+              <div className="hourly-title">時間帯ごとの頒布数</div>
+              <div className="hourly-chart">
+                {hourly.map(h => (
+                  <div key={h.hour} className="hourly-col">
+                    <span className="hourly-count">{h.copies || ''}</span>
+                    <div className="hourly-bar-wrap">
+                      <div
+                        className="hourly-bar"
+                        style={{ height: `${(h.copies / hourlyMax) * 100}%` }}
+                      />
+                    </div>
+                    <span className="hourly-hour">{h.hour}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="hourly-unit">時</div>
+            </div>
+          )}
           <div className="product-summary-card">
             <div className="product-summary-title">商品別売上</div>
             {productSummary.map(p => (

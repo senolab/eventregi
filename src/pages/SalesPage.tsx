@@ -154,9 +154,11 @@ export default function SalesPage() {
     saveProducts(updatedProducts)
     setProducts(updatedProducts)
 
+    const now = new Date()
     const record: SaleRecord = {
       id: generateId(),
-      date: new Date().toLocaleString('ja-JP'),
+      date: now.toLocaleString('ja-JP'),
+      timestamp: now.toISOString(),
       items: cart.map(item => ({
         productId: item.product.id,
         name: item.product.name,

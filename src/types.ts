@@ -24,7 +24,11 @@ export interface SaleItem {
 
 export interface SaleRecord {
   id: string
+  /** 画面表示用。端末の書式で作られる */
   date: string
+  /** 時間帯の集計用（ISO 8601）。表示用の文字列は端末差があるため別に持つ。
+   * この項目を追加する前の記録には入っていないため任意 */
+  timestamp?: string
   items: SaleItem[]
   total: number
   memo?: string
