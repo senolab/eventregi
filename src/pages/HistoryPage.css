@@ -220,10 +220,9 @@
   min-height: 2px;
 }
 
-/* 時刻は正時にだけ入る。空のラベルでも高さを保たないと、
- * その列だけ棒が下に伸びて下端が揃わなくなる */
+/* 空のラベルでも高さを保たないと、その列だけ棒が下に伸びて下端が揃わなくなる */
 .hourly-hour {
-  font-size: 9px;
+  font-size: 8.5px;
   color: #aaa;
   margin-top: 5px;
   height: 11px;

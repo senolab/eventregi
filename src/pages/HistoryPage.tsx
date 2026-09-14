@@ -34,8 +34,11 @@ function slotOf(d: Date): number {
   return d.getHours() * 2 + (d.getMinutes() >= 30 ? 1 : 0)
 }
 
-function slotLabel(slot: number): string {
-  return slot % 2 === 0 ? `${slot / 2}時` : ''
+/** これを超える本数になったら、時刻ラベルを1つおきに間引く */
+const LABEL_ALL_MAX = 12
+
+function slotTime(slot: number): string {
+  return `${Math.floor(slot / 2)}:${slot % 2 === 0 ? '00' : '30'}`
 }
 
 function fileStamp(): string {
@@ -84,9 +87,15 @@ export default function HistoryPage() {
     const used = [...perSlot.keys()]
     const from = Math.min(...used)
     const to = Math.max(...used)
-    const slots = Array.from({ length: to - from + 1 }, (_, i) => ({
+    // 基本は全部の棒に時刻を入れる。ただし長丁場で棒が増えると
+    // ラベル同士がぶつかるので、その場合だけ1つおきにする。
+    // 起点は正時ではなく先頭の棒なので、10:30 開始でも先頭に時刻が入る
+    const count = to - from + 1
+    const every = count <= LABEL_ALL_MAX ? 1 : 2
+    const slots = Array.from({ length: count }, (_, i) => ({
       slot: from + i,
       copies: perSlot.get(from + i) ?? 0,
+      label: i % every === 0 ? slotTime(from + i) : '',
     }))
     return { slots, day: latest, excluded: dated.length - onDay.length }
   })()
@@ -235,7 +244,7 @@ export default function HistoryPage() {
                         style={{ height: `${(s.copies / timelineMax) * 100}%` }}
                       />
                     </div>
-                    <span className="hourly-hour">{slotLabel(s.slot)}</span>
+                    <span className="hourly-hour">{s.label}</span>
                   </div>
                 ))}
               </div>
