@@ -178,7 +178,7 @@
   display: flex;
   align-items: flex-end;
   gap: 3px;
-  height: 104px;
+  height: 112px;
 }
 
 .hourly-col {
@@ -197,6 +197,7 @@
   color: var(--color-primary);
   height: 14px;
   line-height: 14px;
+  margin-bottom: 7px;
 }
 
 /* 棒はこの中で下から伸びる */
@@ -209,9 +210,10 @@
 }
 
 .hourly-bar {
-  width: 100%;
-  /* 時間帯が少ないと1本が横に伸びすぎるので上限を付ける */
-  max-width: 46px;
+  /* 列いっぱいに広げず、間を空けて細く見せる。
+   * 時間帯が少ないときに1本が伸びすぎないよう上限も付ける */
+  width: 72%;
+  max-width: 34px;
   margin: 0 auto;
   background: var(--color-primary);
   border-radius: 3px 3px 0 0;
