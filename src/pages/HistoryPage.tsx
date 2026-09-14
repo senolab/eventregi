@@ -10,18 +10,32 @@ function escapeCsv(value: string): string {
 }
 
 /**
- * 売上が立った時刻（0〜23）。timestamp があればそれを使い、
- * 無い古い記録は表示用の文字列から拾う。読めなければ null。
+ * 売上が立った日時。timestamp があればそれを使い、無い古い記録は
+ * 表示用の文字列（例 2026/9/13 11:05:00）から拾う。読めなければ null。
  */
-function saleHour(sale: SaleRecord): number | null {
+function saleDate(sale: SaleRecord): Date | null {
   if (sale.timestamp) {
     const d = new Date(sale.timestamp)
-    if (!isNaN(d.getTime())) return d.getHours()
+    if (!isNaN(d.getTime())) return d
   }
-  const m = sale.date.match(/(\d{1,2}):\d{2}/)
+  const m = sale.date.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\D+(\d{1,2}):(\d{2})/)
   if (!m) return null
-  const h = parseInt(m[1])
-  return h >= 0 && h <= 23 ? h : null
+  const [, y, mo, d, h, mi] = m.map(Number)
+  return new Date(y, mo - 1, d, h, mi)
+}
+
+/** 同じ日かどうかの判定に使うキー */
+function dayKey(d: Date): string {
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+}
+
+/** 30分刻みの通し番号（0:00→0, 0:30→1, … 23:30→47） */
+function slotOf(d: Date): number {
+  return d.getHours() * 2 + (d.getMinutes() >= 30 ? 1 : 0)
+}
+
+function slotLabel(slot: number): string {
+  return slot % 2 === 0 ? `${slot / 2}時` : ''
 }
 
 function fileStamp(): string {
@@ -50,28 +64,34 @@ export default function HistoryPage() {
   )
 
   /**
-   * 時間帯ごとの頒布数。売れた時間の範囲だけを、間を空けずに並べる。
+   * 30分ごとの頒布数。対象は「一番新しい売上と同じ日」だけ。
+   * 別の日に残っているテスト分などを混ぜないための絞り込み。
    * 記録件数はイベント1日で多くても数百なので、その都度数え直して問題ない。
    */
-  const hourly = (() => {
-    const perHour = new Map<number, number>()
-    for (const sale of sales) {
-      const hour = saleHour(sale)
-      if (hour === null) continue
-      const copies = sale.items.reduce((n, i) => n + i.quantity, 0)
-      perHour.set(hour, (perHour.get(hour) ?? 0) + copies)
-    }
-    if (perHour.size === 0) return []
-    const hours = [...perHour.keys()]
-    const from = Math.min(...hours)
-    const to = Math.max(...hours)
-    return Array.from({ length: to - from + 1 }, (_, i) => ({
-      hour: from + i,
-      copies: perHour.get(from + i) ?? 0,
+  const timeline = (() => {
+    const dated = sales
+      .map(s => ({ at: saleDate(s), copies: s.items.reduce((n, i) => n + i.quantity, 0) }))
+      .filter((s): s is { at: Date; copies: number } => s.at !== null)
+    if (dated.length === 0) return { slots: [], day: null as Date | null, excluded: 0 }
+
+    const latest = dated.reduce((a, b) => (a.at > b.at ? a : b)).at
+    const today = dayKey(latest)
+    const onDay = dated.filter(s => dayKey(s.at) === today)
+
+    const perSlot = new Map<number, number>()
+    for (const s of onDay) perSlot.set(slotOf(s.at), (perSlot.get(slotOf(s.at)) ?? 0) + s.copies)
+
+    const used = [...perSlot.keys()]
+    const from = Math.min(...used)
+    const to = Math.max(...used)
+    const slots = Array.from({ length: to - from + 1 }, (_, i) => ({
+      slot: from + i,
+      copies: perSlot.get(from + i) ?? 0,
     }))
+    return { slots, day: latest, excluded: dated.length - onDay.length }
   })()
 
-  const hourlyMax = Math.max(1, ...hourly.map(h => h.copies))
+  const timelineMax = Math.max(1, ...timeline.slots.map(s => s.copies))
 
   const productSummary = (() => {
     const map = new Map<string, { quantity: number; revenue: number }>()
@@ -185,26 +205,6 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {hourly.length > 0 && (
-            <div className="hourly-card">
-              <div className="hourly-title">時間帯ごとの頒布数</div>
-              <div className="hourly-chart">
-                {hourly.map(h => (
-                  <div key={h.hour} className="hourly-col">
-                    <span className="hourly-count">{h.copies || ''}</span>
-                    <div className="hourly-bar-wrap">
-                      <div
-                        className="hourly-bar"
-                        style={{ height: `${(h.copies / hourlyMax) * 100}%` }}
-                      />
-                    </div>
-                    <span className="hourly-hour">{h.hour}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="hourly-unit">時</div>
-            </div>
-          )}
           <div className="product-summary-card">
             <div className="product-summary-title">商品別売上</div>
             {productSummary.map(p => (
@@ -215,6 +215,37 @@ export default function HistoryPage() {
               </div>
             ))}
           </div>
+
+          {timeline.slots.length > 0 && (
+            <div className="hourly-card">
+              <div className="hourly-head">
+                <span className="hourly-title">頒布数の推移</span>
+                <span className="hourly-sub">
+                  {timeline.day!.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' })}
+                  ・30分ごと
+                </span>
+              </div>
+              <div className="hourly-chart">
+                {timeline.slots.map(s => (
+                  <div key={s.slot} className="hourly-col">
+                    <span className="hourly-count">{s.copies || ''}</span>
+                    <div className="hourly-bar-wrap">
+                      <div
+                        className="hourly-bar"
+                        style={{ height: `${(s.copies / timelineMax) * 100}%` }}
+                      />
+                    </div>
+                    <span className="hourly-hour">{slotLabel(s.slot)}</span>
+                  </div>
+                ))}
+              </div>
+              {timeline.excluded > 0 && (
+                <p className="hourly-note">
+                  別の日の{timeline.excluded}件は含めていません
+                </p>
+              )}
+            </div>
+          )}
         </>
       )}
 

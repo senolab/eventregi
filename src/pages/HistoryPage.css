@@ -147,26 +147,38 @@
   cursor: pointer;
 }
 
-/* 時間帯ごとの頒布数 */
+/* 頒布数の推移（30分ごと） */
 .hourly-card {
   background: #fff;
   border: 1px solid #f0f0f0;
   border-radius: 16px;
   margin: 0 16px 16px;
-  padding: 14px 16px 10px;
+  padding: 14px 14px 10px;
+}
+
+.hourly-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .hourly-title {
   font-size: 12px;
   color: #888;
-  margin-bottom: 12px;
+}
+
+.hourly-sub {
+  font-size: 10px;
+  color: #bbb;
 }
 
 .hourly-chart {
   display: flex;
   align-items: flex-end;
-  gap: 5px;
-  height: 108px;
+  gap: 3px;
+  height: 104px;
 }
 
 .hourly-col {
@@ -178,9 +190,11 @@
   height: 100%;
 }
 
+/* 冊数。下の時刻と紛れないよう色を変えている */
 .hourly-count {
   font-size: 10px;
-  color: #999;
+  font-weight: bold;
+  color: var(--color-primary);
   height: 14px;
   line-height: 14px;
 }
@@ -200,21 +214,22 @@
   max-width: 46px;
   margin: 0 auto;
   background: var(--color-primary);
-  border-radius: 4px 4px 0 0;
+  border-radius: 3px 3px 0 0;
   min-height: 2px;
 }
 
+/* 時刻は正時にだけ入る。半端な位置の目盛りは空文字 */
 .hourly-hour {
-  font-size: 10px;
-  color: #999;
+  font-size: 9px;
+  color: #aaa;
   margin-top: 5px;
+  white-space: nowrap;
 }
 
-.hourly-unit {
-  text-align: right;
+.hourly-note {
   font-size: 10px;
   color: #bbb;
-  margin-top: 2px;
+  margin-top: 6px;
 }
 
 /* 会計の取り消し。誤タップで消えないよう2段階にする */
