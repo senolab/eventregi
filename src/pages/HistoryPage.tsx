@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { SaleRecord } from '../types'
-import { loadSales, saveSales, loadProducts } from '../store'
+import { loadSales, saveSales, loadProducts, deleteSale } from '../store'
 import { saveFile } from '../fileSave'
 import { PencilIcon, UploadIcon } from '../icons'
 import './HistoryPage.css'
@@ -19,6 +19,8 @@ export default function HistoryPage() {
   const [sales, setSales] = useState<SaleRecord[]>([])
   const [productOrder, setProductOrder] = useState<string[]>([])
   const [editingMemoId, setEditingMemoId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [deleteMessage, setDeleteMessage] = useState<string | null>(null)
   const [memoInput, setMemoInput] = useState('')
 
   useEffect(() => {
@@ -91,6 +93,18 @@ export default function HistoryPage() {
     saveFile(`売上_${fileStamp()}.csv`, 'text/csv;charset=utf-8', '﻿' + csv)
   }
 
+  const confirmDelete = (saleId: string) => {
+    const { restored, skipped } = deleteSale(saleId)
+    setSales(loadSales())
+    setProductOrder(loadProducts().map(p => p.name))
+    setDeleteId(null)
+    setDeleteMessage(
+      skipped.length > 0
+        ? `取り消しました（${skipped.join('・')}は商品一覧にないため在庫を戻せませんでした）`
+        : `取り消しました（在庫を${restored}点戻しました）`
+    )
+  }
+
   const openMemoEdit = (sale: SaleRecord) => {
     setEditingMemoId(sale.id)
     setMemoInput(sale.memo ?? '')
@@ -141,6 +155,11 @@ export default function HistoryPage() {
         </div>
       ) : (
         <>
+          {deleteMessage && (
+            <p className="delete-message" onClick={() => setDeleteMessage(null)}>
+              {deleteMessage}
+            </p>
+          )}
           <div className="sale-list">
             {sales.map(sale => (
               <div key={sale.id} className="sale-record">
@@ -171,11 +190,27 @@ export default function HistoryPage() {
                     <button className="memo-cancel-btn" onClick={() => setEditingMemoId(null)}>✕</button>
                   </div>
                 ) : (
-                  <div className="memo-row" onClick={() => openMemoEdit(sale)}>
-                    {sale.memo
-                      ? <span className="sale-memo"><PencilIcon className="memo-icon" />{sale.memo}</span>
-                      : <span className="memo-placeholder">＋ メモを追加</span>
-                    }
+                  <div className="memo-row">
+                    <span className="memo-row-text" onClick={() => openMemoEdit(sale)}>
+                      {sale.memo
+                        ? <span className="sale-memo"><PencilIcon className="memo-icon" />{sale.memo}</span>
+                        : <span className="memo-placeholder">＋ メモを追加</span>
+                      }
+                    </span>
+                    {deleteId === sale.id ? (
+                      <span className="sale-delete-confirm">
+                        <button className="sale-delete-yes" onClick={() => confirmDelete(sale.id)}>
+                          取り消す
+                        </button>
+                        <button className="sale-delete-no" onClick={() => setDeleteId(null)}>
+                          ✕
+                        </button>
+                      </span>
+                    ) : (
+                      <button className="sale-delete-btn" onClick={() => setDeleteId(sale.id)}>
+                        取消
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

@@ -135,7 +135,66 @@
 }
 
 .memo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 14px 8px;
+}
+
+.memo-row-text {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+/* 会計の取り消し。誤タップで消えないよう2段階にする */
+.sale-delete-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #c9c9c9;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.sale-delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sale-delete-yes {
+  background: #d9534f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.sale-delete-no {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #aaa;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.delete-message {
+  margin: 0 16px 10px;
+  padding: 9px 12px;
+  background: var(--color-primary-light);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #666;
   cursor: pointer;
 }
 
