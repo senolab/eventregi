@@ -13,10 +13,19 @@ export interface CartItem {
   quantity: number
 }
 
+export interface SaleItem {
+  name: string
+  price: number
+  quantity: number
+  /** 取り消したときに在庫を戻す先。名前は変わりうるので id で照合する。
+   * この項目を追加する前の記録には入っていないため任意 */
+  productId?: string
+}
+
 export interface SaleRecord {
   id: string
   date: string
-  items: { name: string; price: number; quantity: number }[]
+  items: SaleItem[]
   total: number
   memo?: string
 }

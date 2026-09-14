@@ -527,7 +527,27 @@
 
 /* step2-footerのボタン比率 */
 .step2-footer .btn-secondary {
-  flex: 0.8;
+  flex: 0.62;
+}
+
+/* ぴったり受け取ったとき用。お預かりを打たずに会計を終える。
+ * 3つ並ぶので文字を少し小さくして収めている */
+.btn-exact {
+  flex: 1.05;
+  border: 2px solid var(--color-primary);
+  border-radius: 12px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 12px 4px;
+  white-space: nowrap;
+}
+
+.btn-exact:active {
+  background: var(--color-primary-border);
 }
 
 /* 電卓キーパッド */

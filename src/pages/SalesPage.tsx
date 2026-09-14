@@ -142,7 +142,8 @@ export default function SalesPage() {
   const cartQuantity = (productId: string) =>
     cart.find(item => item.product.id === productId)?.quantity ?? 0
 
-  const handleConfirm = () => {
+  /** 在庫を減らし、売上に記録して完了画面へ。お預かり額だけが呼び出し元で変わる */
+  const completeSale = (receivedAmount: number) => {
     if (cart.length === 0) return
 
     const updatedProducts = products.map(p => {
@@ -157,6 +158,7 @@ export default function SalesPage() {
       id: generateId(),
       date: new Date().toLocaleString('ja-JP'),
       items: cart.map(item => ({
+        productId: item.product.id,
         name: item.product.name,
         price: item.product.price,
         quantity: item.quantity,
@@ -165,11 +167,21 @@ export default function SalesPage() {
     }
     saveSales([record, ...loadSales()])
 
-    setCompletedSummary({ total, received: receivedNum, change: change ?? 0, notes: cartNotes })
+    setCompletedSummary({
+      total,
+      received: receivedAmount,
+      change: receivedAmount - total,
+      notes: cartNotes,
+    })
     setCart([])
     setReceived('')
     setStep(3)
   }
+
+  const handleConfirm = () => completeSale(receivedNum)
+
+  /** ちょうど受け取ったとき。お預かりを打たずに会計を終える */
+  const handleExactPayment = () => completeSale(total)
 
   const handleNextCustomer = () => {
     setCompletedSummary(null)
@@ -376,6 +388,9 @@ export default function SalesPage() {
         <div className="step2-footer">
           <button className="btn-secondary" onClick={handleBack}>
             戻る
+          </button>
+          <button className="btn-exact" onClick={handleExactPayment}>
+            ぴったり会計
           </button>
           <button
             className="btn-primary confirm-btn"

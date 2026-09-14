@@ -33,6 +33,38 @@ export function saveSales(sales: SaleRecord[]): void {
   localStorage.setItem(SALES_KEY, JSON.stringify(sales))
 }
 
+/**
+ * 売上を1件取り消し、売れたぶんの在庫を戻す。
+ * 商品は id で照合する。id を持たない古い記録は名前で探し、
+ * 見つからない（削除済み・改名済み）ものは在庫を戻さずに諦める。
+ * 戻せなかった商品名を返す。
+ */
+export function deleteSale(saleId: string): { restored: number; skipped: string[] } {
+  const sales = loadSales()
+  const target = sales.find(s => s.id === saleId)
+  if (!target) return { restored: 0, skipped: [] }
+
+  const products = loadProducts()
+  const skipped: string[] = []
+  let restored = 0
+
+  for (const item of target.items) {
+    const product = item.productId
+      ? products.find(p => p.id === item.productId)
+      : products.find(p => p.name === item.name)
+    if (!product) {
+      skipped.push(item.name)
+      continue
+    }
+    product.stock += item.quantity
+    restored += item.quantity
+  }
+
+  saveProducts(products)
+  saveSales(sales.filter(s => s.id !== saleId))
+  return { restored, skipped }
+}
+
 export function loadThemeId(): string | null {
   return localStorage.getItem(THEME_KEY)
 }
